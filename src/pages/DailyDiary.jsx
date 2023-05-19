@@ -10,7 +10,6 @@ import {
   Stack,
   Badge,
   useBreakpointValue,
-  Button,
 } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
 
