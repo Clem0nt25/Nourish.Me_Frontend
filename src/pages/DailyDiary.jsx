@@ -1,13 +1,29 @@
-import { useState, useEffect, useRef } from "react";
-import { Button, VStack, HStack, Select, Input, Text } from "@chakra-ui/react";
-import { SearchIcon, AddIcon } from "@chakra-ui/icons";
+import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  VStack,
+  Box,
+  Text,
+  HStack,
+  Input,
+  IconButton,
+  Center,
+  Stack,
+  Badge,
+} from "@chakra-ui/react";
+
+import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function DailyDiary() {
-  const [mealType, setMealType] = useState("Breakfast"); // Default value is "Breakfast"
   const [foodName, setFoodName] = useState("");
   const [results, setResults] = useState([]);
+  const [diary, setDiary] = useState({
+    Breakfast: [],
+    Lunch: [],
+    Dinner: [],
+    Snacks: [],
+  });
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
@@ -17,53 +33,42 @@ function DailyDiary() {
     searchRef.current = setTimeout(func, delay);
   };
 
-  // Search foods from the API based on user input
-  useEffect(() => {
-    if (foodName) {
-      debounce(searchFoods, 300);
-    } else {
-      setResults([]);
-    }
-  }, [foodName]);
-
-  const searchFoods = async () => {
+  const searchFoods = useCallback(async () => {
     try {
-      const response = await axios.post("/getFood", {
-        mealType,
-        foodName,
-      });
+      const response = await axios.post("/getFood", { foodName });
       setResults(response.data.data); // Assuming the API returns an array of food objects
     } catch (error) {
       console.log(error);
-      // Handle the error appropriately in your app
     }
-  };
+  }, [foodName]);
+
+  // Search foods from the API based on user input, using debounce to limit API calls
+  useEffect(() => {
+    if (foodName) {
+      debounce(searchFoods, 300); // Debounce for 300ms
+    } else {
+      setResults([]);
+    }
+  }, [foodName, searchFoods]);
 
   const handleScanBarcode = () => {
     // TODO: Implement barcode scanning
     console.log("Barcode scanning not implemented yet");
   };
 
-  const handleMealTypeChange = (event) => {
-    setMealType(event.target.value);
-  };
-
-  const handleFoodSelect = (barcode) => {
-    navigate(`/food-details/${barcode}`);
+  const handleFoodSelect = (food) => {
+    navigate(`/food-details/${food.barcode}`, { state: { food } });
   };
 
   return (
     <VStack align="stretch" spacing={4}>
-      <Select
-        placeholder="Meal type"
-        value={mealType}
-        onChange={handleMealTypeChange}
-      >
-        <option value="Breakfast">Breakfast</option>
-        <option value="Lunch">Lunch</option>
-        <option value="Dinner">Dinner</option>
-        <option value="Snack">Snack</option>
-      </Select>
+      {/* Placeholder for Calorie Tracker info - could be a pie chart or something */}
+      <Stack direction="row" justify="space-between">
+        <Badge>Calories: 2000/2000 kcal</Badge>
+        <Badge>Protein: 50g</Badge>
+        <Badge>Carbs: 250g</Badge>
+        <Badge>Fat: 50g</Badge>
+      </Stack>
 
       <HStack>
         <Input
@@ -71,25 +76,41 @@ function DailyDiary() {
           value={foodName}
           onChange={(e) => setFoodName(e.target.value)}
         />
-
-        {/* Display search results */}
-        {results.length > 0 && (
-          <VStack>
-            {results.map((food) => (
-              <Text
-                key={food.barcode}
-                onClick={() => handleFoodSelect(food.barcode)}
-              >
-                {food.name}
-              </Text>
-            ))}
-          </VStack>
-        )}
       </HStack>
 
-      <Button leftIcon={<AddIcon />} onClick={handleScanBarcode}>
-        Scan Barcode
-      </Button>
+      {/* Display search results */}
+      {results.length > 0 && (
+        <VStack>
+          {results.map((food) => (
+            <Text key={food.barcode} onClick={() => handleFoodSelect(food)}>
+              {food.name}
+            </Text>
+          ))}
+        </VStack>
+      )}
+
+      {/* Display diary entries */}
+      {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
+        <Box key={mealType}>
+          <Text fontWeight="bold">{mealType}</Text>
+          <VStack align="start">
+            {diary[mealType].map((food) => (
+              <Text key={food.barcode}>{food.name}</Text>
+            ))}
+          </VStack>
+        </Box>
+      ))}
+
+      <Center position="fixed" bottom="8" width="100%">
+        <IconButton
+          bg="#98FB98"
+          aria-label="Scan a barcode"
+          icon={<Box as="img" src={barcodeIcon} boxSize="20" p="3" />}
+          size="xl"
+          isRound
+          onClick={handleScanBarcode}
+        />
+      </Center>
     </VStack>
   );
 }
