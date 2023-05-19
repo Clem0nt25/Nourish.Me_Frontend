@@ -9,7 +9,11 @@ import {
   Center,
   Stack,
   Badge,
+  useBreakpointValue,
+  Button,
 } from "@chakra-ui/react";
+
+import MainContainer from "../components/MainContainer";
 
 import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
@@ -60,58 +64,63 @@ function DailyDiary() {
     navigate(`/food-details/${food.barcode}`, { state: { food } });
   };
 
+  const stackDirection = useBreakpointValue({ base: "column", md: "row" });
+
   return (
-    <VStack align="stretch" spacing={4}>
-      {/* Placeholder for Calorie Tracker info - could be a pie chart or something */}
-      <Stack direction="row" justify="space-between">
-        <Badge>Calories: 2000/2000 kcal</Badge>
-        <Badge>Protein: 50g</Badge>
-        <Badge>Carbs: 250g</Badge>
-        <Badge>Fat: 50g</Badge>
-      </Stack>
+    <MainContainer>
+      <VStack align="stretch" spacing={4}>
+        <Box>
+          <Stack direction={stackDirection} justify="space-between" spacing={4}>
+            <Badge>Calories: 2000/2000 kcal</Badge>
+            <Badge>Protein: 50g</Badge>
+            <Badge>Carbs: 250g</Badge>
+            <Badge>Fat: 50g</Badge>
+          </Stack>
+        </Box>
 
-      <HStack>
-        <Input
-          placeholder="Enter food name"
-          value={foodName}
-          onChange={(e) => setFoodName(e.target.value)}
-        />
-      </HStack>
+        <HStack>
+          <Input
+            placeholder="Enter food name"
+            value={foodName}
+            onChange={(e) => setFoodName(e.target.value)}
+          />
+        </HStack>
 
-      {/* Display search results */}
-      {results.length > 0 && (
-        <VStack>
-          {results.map((food) => (
-            <Text key={food.barcode} onClick={() => handleFoodSelect(food)}>
-              {food.name}
-            </Text>
-          ))}
-        </VStack>
-      )}
-
-      {/* Display diary entries */}
-      {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
-        <Box key={mealType}>
-          <Text fontWeight="bold">{mealType}</Text>
-          <VStack align="start">
-            {diary[mealType].map((food) => (
-              <Text key={food.barcode}>{food.name}</Text>
+        {/* Display search results */}
+        {results.length > 0 && (
+          <VStack>
+            {results.map((food) => (
+              <Text key={food.barcode} onClick={() => handleFoodSelect(food)}>
+                {food.name}
+              </Text>
             ))}
           </VStack>
-        </Box>
-      ))}
+        )}
 
-      <Center position="fixed" bottom="8" width="100%">
-        <IconButton
-          bg="#98FB98"
-          aria-label="Scan a barcode"
-          icon={<Box as="img" src={barcodeIcon} boxSize="20" p="3" />}
-          size="xl"
-          isRound
-          onClick={handleScanBarcode}
-        />
-      </Center>
-    </VStack>
+        {/* Display diary entries */}
+        {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
+          <Box key={mealType}>
+            <Text fontWeight="bold">{mealType}</Text>
+            <VStack align="start">
+              {diary[mealType].map((food) => (
+                <Text key={food.barcode}>{food.name}</Text>
+              ))}
+            </VStack>
+          </Box>
+        ))}
+
+        <Center>
+          <IconButton
+            variant="button-icon"
+            aria-label="Scan a barcode"
+            icon={<Box as="img" src={barcodeIcon} boxSize="20" p="3" />}
+            boxSize="80px"
+            isRound
+            onClick={handleScanBarcode}
+          />
+        </Center>
+      </VStack>
+    </MainContainer>
   );
 }
 

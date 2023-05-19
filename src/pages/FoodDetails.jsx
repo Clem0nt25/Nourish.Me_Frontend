@@ -1,5 +1,5 @@
 function FoodDetails() {
-  return <></>;
+  return <>{/* Date  */}</>;
 }
 
 export default FoodDetails;
