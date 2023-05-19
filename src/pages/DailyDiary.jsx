@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   VStack,
   Box,
@@ -10,9 +10,9 @@ import {
   Stack,
   Badge,
   useBreakpointValue,
+  Image,
 } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
-
 import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -26,51 +26,67 @@ function DailyDiary() {
     Dinner: [],
     Snacks: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [source, setSource] = useState(axios.CancelToken.source());
+
   const searchRef = useRef(null);
   const navigate = useNavigate();
-  let source;
 
-  // Debounce function to limit API calls
-  const debounce = (func, delay) => {
-    clearTimeout(searchRef.current);
-    searchRef.current = setTimeout(() => {
-      if (source) {
-        source.cancel("Cancelling previous request");
-      }
-      source = axios.CancelToken.source();
-      func();
-    }, delay);
+  // Delay function to limit API calls
+  const delay = (func, delay) => {
+    if (searchRef.current) clearTimeout(searchRef.current);
+    searchRef.current = setTimeout(func, delay);
   };
 
-  const searchFoods = useCallback(async () => {
+  const searchFoods = async () => {
     try {
-      console.log("Foodname:", foodName);
+      setIsLoading(true);
+
+      if (!foodName.trim()) {
+        setResults([]);
+        setIsLoading(false);
+        return;
+      }
+
+      if (source) {
+        source.cancel("Operation canceled due to new request.");
+      }
+
+      const newSource = axios.CancelToken.source();
+      setSource(newSource);
+
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}/api/getFood`,
         { foodName },
-        { cancelToken: source.token }
+        { cancelToken: newSource.token }
       );
-      setResults(response.data);
+
+      setResults(response.data.data);
+      setIsLoading(false);
     } catch (error) {
       if (axios.isCancel(error)) {
         console.log("Request cancelled");
       } else {
         console.log(error);
       }
+      setIsLoading(false);
     }
-  }, [foodName]);
+  };
+
+  const handleInputChange = (e) => {
+    setFoodName(e.target.value);
+    delay(searchFoods, 200);
+  };
+
   useEffect(() => {
     console.log(results);
   }, [results]);
 
-  // Search foods from the API based on user input, using debounce to limit API calls
   useEffect(() => {
-    if (foodName) {
-      debounce(searchFoods, 300); // Debounce for 300ms
-    } else {
-      setResults([]);
-    }
-  }, [foodName, searchFoods]);
+    return () => {
+      clearTimeout(searchRef.current);
+    };
+  }, []);
 
   const handleScanBarcode = () => {
     // TODO: Implement barcode scanning
@@ -86,6 +102,7 @@ function DailyDiary() {
   return (
     <MainContainer>
       <VStack align="stretch" spacing={4}>
+        {/* Display daily macros */}
         <Box>
           <Stack direction={stackDirection} justify="space-between" spacing={4}>
             <Badge>Calories: 2000/2000 kcal</Badge>
@@ -95,21 +112,26 @@ function DailyDiary() {
           </Stack>
         </Box>
 
+        {/* Search bar */}
         <HStack>
           <Input
             placeholder="Enter food name"
             value={foodName}
-            onChange={(e) => setFoodName(e.target.value)}
+            onChange={handleInputChange}
           />
         </HStack>
+
+        {/* Display loading state  TOD0 - add a spinner*/}
+        {isLoading && <Text>Loading...</Text>}
 
         {/* Display search results */}
         {results.length > 0 && (
           <VStack align="start">
             {results.map((food) => (
-              <Text key={food.barcode} onClick={() => handleFoodSelect(food)}>
-                {food.foodName}
-              </Text>
+              <Box key={food.barcode} onClick={() => handleFoodSelect(food)}>
+                <Text>{food.foodName}</Text>
+                <Image boxSize="100px" src={food.image} alt={food.foodName} />
+              </Box>
             ))}
           </VStack>
         )}
@@ -120,7 +142,7 @@ function DailyDiary() {
             <Text fontWeight="bold">{mealType}</Text>
             <VStack align="start">
               {diary[mealType].map((food) => (
-                <Text key={food.barcode}>{food.name}</Text>
+                <Text key={food.barcode}>{food.foodName}</Text>
               ))}
             </VStack>
           </Box>

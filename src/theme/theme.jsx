@@ -9,7 +9,7 @@ const theme = extendTheme({
         color: "#292F36",
       },
       variants: {
-        "button-icon": { backgroundColor: "#98FB98", color: "#292F36" },
+        "button-icon": { backgroundColor: "#98FB98" },
       },
       defaultProps: {
         variant: "solid",
