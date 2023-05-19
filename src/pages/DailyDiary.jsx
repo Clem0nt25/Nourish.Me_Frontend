@@ -1,22 +1,17 @@
 import { useState } from "react";
 import {
-  Box,
   Button,
   VStack,
   HStack,
   Select,
   Input,
   IconButton,
-  Tag,
-  TagCloseButton,
-  TagLabel,
 } from "@chakra-ui/react";
 import { SearchIcon, AddIcon } from "@chakra-ui/icons";
 
 function DailyDiary() {
-  const [mealType, setMealType] = useState("Breakfast");
+  const [mealType, setMealType] = useState("Breakfast"); // Default value is "Breakfast"
   const [foodName, setFoodName] = useState("");
-  const [frequentFoods, setFrequentFoods] = useState([]);
 
   const handleScanBarcode = () => {
     // TODO: Implement barcode scanning
@@ -29,23 +24,6 @@ function DailyDiary() {
 
   const handleFoodNameChange = (event) => {
     setFoodName(event.target.value);
-  };
-
-  const handleFrequentFoodChange = (event) => {
-    const selectedFood = event.target.value;
-    const index = frequentFoods.indexOf(selectedFood);
-
-    if (index > -1) {
-      // If the food is already in the list, remove it
-      setFrequentFoods(frequentFoods.filter((food) => food !== selectedFood));
-    } else {
-      // Otherwise, add the food to the list
-      setFrequentFoods([...frequentFoods, selectedFood]);
-    }
-  };
-
-  const removeFrequentFood = (removedFood) => {
-    setFrequentFoods(frequentFoods.filter((food) => food !== removedFood));
   };
 
   return (
@@ -73,28 +51,6 @@ function DailyDiary() {
       <Button leftIcon={<AddIcon />} onClick={handleScanBarcode}>
         Scan Barcode
       </Button>
-
-      <HStack wrap="wrap" spacing={2}>
-        {frequentFoods.map((food) => (
-          <Tag
-            size="lg"
-            key={food}
-            borderRadius="full"
-            variant="solid"
-            colorScheme="teal"
-          >
-            <TagLabel>{food}</TagLabel>
-            <TagCloseButton onClick={() => removeFrequentFood(food)} />
-          </Tag>
-        ))}
-      </HStack>
-
-      <Box as="form" onSubmit={handleFrequentFoodChange}>
-        <HStack>
-          <Input placeholder="Enter frequent food name" />
-          <Button type="submit">Add to frequent foods</Button>
-        </HStack>
-      </Box>
     </VStack>
   );
 }
