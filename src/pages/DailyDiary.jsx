@@ -32,7 +32,6 @@ function DailyDiary() {
   let source;
 
   // Debounce function to limit API calls
-  // Debounce function to limit API calls
   const debounce = (func, delay) => {
     clearTimeout(searchRef.current);
     searchRef.current = setTimeout(() => {
@@ -79,9 +78,9 @@ function DailyDiary() {
     console.log("Barcode scanning not implemented yet");
   };
 
-  // const handleFoodSelect = (food) => {
-  //   navigate(`/food-details/${food.barcode}`, { state: { food } });
-  // };
+  const handleFoodSelect = (food) => {
+    navigate(`/food-details/${food.barcode}`, { state: { food } });
+  };
 
   const stackDirection = useBreakpointValue({ base: "column", md: "row" });
 
@@ -105,6 +104,17 @@ function DailyDiary() {
           />
         </HStack>
 
+        {/* Display search results */}
+        {results.length > 0 && (
+          <VStack align="start">
+            {results.map((food) => (
+              <Text key={food.barcode} onClick={() => handleFoodSelect(food)}>
+                {food.foodName}
+              </Text>
+            ))}
+          </VStack>
+        )}
+
         {/* Display diary entries */}
         {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
           <Box key={mealType}>
@@ -116,13 +126,6 @@ function DailyDiary() {
             </VStack>
           </Box>
         ))}
-
-        {/* Display search results */}
-        {/* <VStack align="start">
-          {results.map((food) => (
-            <Text key={food.barcode}>{food.foodName}</Text>
-          ))}
-        </VStack> */}
 
         <Center>
           <IconButton
