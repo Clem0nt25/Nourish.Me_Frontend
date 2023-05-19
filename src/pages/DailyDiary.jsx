@@ -12,7 +12,6 @@ import {
   useBreakpointValue,
   Button,
 } from "@chakra-ui/react";
-
 import MainContainer from "../components/MainContainer";
 
 import barcodeIcon from "../assets/barcode.png";
@@ -39,8 +38,11 @@ function DailyDiary() {
 
   const searchFoods = useCallback(async () => {
     try {
-      const response = await axios.post("/getFood", { foodName });
-      setResults(response.data.data); // Assuming the API returns an array of food objects
+      console.log("Foodname:", foodName)
+      const response = await axios.post(`${import.meta.env.VITE_BASE_API_URL}/api/getFood`, { foodName });
+      setResults(response.data); // Assuming the API returns an array of food objects
+      console.log(results)
+
     } catch (error) {
       console.log(error);
     }
@@ -49,7 +51,7 @@ function DailyDiary() {
   // Search foods from the API based on user input, using debounce to limit API calls
   useEffect(() => {
     if (foodName) {
-      debounce(searchFoods, 300); // Debounce for 300ms
+      debounce(searchFoods, 1000); // Debounce for 300ms
     } else {
       setResults([]);
     }
@@ -86,16 +88,6 @@ function DailyDiary() {
           />
         </HStack>
 
-        {/* Display search results */}
-        {results.length > 0 && (
-          <VStack>
-            {results.map((food) => (
-              <Text key={food.barcode} onClick={() => handleFoodSelect(food)}>
-                {food.name}
-              </Text>
-            ))}
-          </VStack>
-        )}
 
         {/* Display diary entries */}
         {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
