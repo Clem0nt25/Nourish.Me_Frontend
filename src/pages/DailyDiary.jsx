@@ -29,29 +29,46 @@ function DailyDiary() {
   });
   const searchRef = useRef(null);
   const navigate = useNavigate();
+  let source;
 
+  // Debounce function to limit API calls
   // Debounce function to limit API calls
   const debounce = (func, delay) => {
     clearTimeout(searchRef.current);
-    searchRef.current = setTimeout(func, delay);
+    searchRef.current = setTimeout(() => {
+      if (source) {
+        source.cancel("Cancelling previous request");
+      }
+      source = axios.CancelToken.source();
+      func();
+    }, delay);
   };
 
   const searchFoods = useCallback(async () => {
     try {
-      console.log("Foodname:", foodName)
-      const response = await axios.post(`${import.meta.env.VITE_BASE_API_URL}/api/getFood`, { foodName });
-      setResults(response.data); // Assuming the API returns an array of food objects
-      console.log(results)
-
+      console.log("Foodname:", foodName);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_API_URL}/api/getFood`,
+        { foodName },
+        { cancelToken: source.token }
+      );
+      setResults(response.data);
     } catch (error) {
-      console.log(error);
+      if (axios.isCancel(error)) {
+        console.log("Request cancelled");
+      } else {
+        console.log(error);
+      }
     }
   }, [foodName]);
+  useEffect(() => {
+    console.log(results);
+  }, [results]);
 
   // Search foods from the API based on user input, using debounce to limit API calls
   useEffect(() => {
     if (foodName) {
-      debounce(searchFoods, 1000); // Debounce for 300ms
+      debounce(searchFoods, 300); // Debounce for 300ms
     } else {
       setResults([]);
     }
@@ -62,9 +79,9 @@ function DailyDiary() {
     console.log("Barcode scanning not implemented yet");
   };
 
-  const handleFoodSelect = (food) => {
-    navigate(`/food-details/${food.barcode}`, { state: { food } });
-  };
+  // const handleFoodSelect = (food) => {
+  //   navigate(`/food-details/${food.barcode}`, { state: { food } });
+  // };
 
   const stackDirection = useBreakpointValue({ base: "column", md: "row" });
 
@@ -88,7 +105,6 @@ function DailyDiary() {
           />
         </HStack>
 
-
         {/* Display diary entries */}
         {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
           <Box key={mealType}>
@@ -100,6 +116,13 @@ function DailyDiary() {
             </VStack>
           </Box>
         ))}
+
+        {/* Display search results */}
+        {/* <VStack align="start">
+          {results.map((food) => (
+            <Text key={food.barcode}>{food.foodName}</Text>
+          ))}
+        </VStack> */}
 
         <Center>
           <IconButton
