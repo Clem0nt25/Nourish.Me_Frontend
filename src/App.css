@@ -3,3 +3,15 @@
 	margin: 0 auto;
 	text-align: center;
 }
+
+.progressbar {
+	margin: 10px auto;
+	width: 400px;
+	height: 5px;
+	background-color: rgb(198, 198, 198);
+}
+
+.progressbar div {
+	height: 100%;
+	background-color: rgb(38, 142, 227);
+}
