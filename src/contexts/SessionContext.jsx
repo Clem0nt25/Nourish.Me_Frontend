@@ -7,6 +7,7 @@ function SessionContextProvider({ children }) {
 	const [tokenSt, setTokenSt] = useState();
 	const [isLoggedInSt, setIsLoggedInSt] = useState(false);
 	const [isLoadingSt, setIsLoadingSt] = useState(true);
+	const [currUserSt, setCurrUserSt] = useState();
 
 	const navigate = useNavigate();
 
@@ -23,7 +24,8 @@ function SessionContextProvider({ children }) {
 			const parsed = await response.json();
 			setTokenSt(currentToken);
 			setIsLoggedInSt(true);
-			console.log(parsed);
+			// console.log(parsed);
+			setCurrUserSt(parsed.user);
 		}
 		setIsLoadingSt(false);
 	};
@@ -33,7 +35,7 @@ function SessionContextProvider({ children }) {
 		if (localToken) {
 			verifyToken(localToken);
 		}
-	}, []);
+	}, [isLoggedInSt]);
 
 	useEffect(() => {
 		if (tokenSt) {
@@ -54,7 +56,14 @@ function SessionContextProvider({ children }) {
 
 	return (
 		<SessionContext.Provider
-			value={{ tokenSt, setTokenSt, isLoggedInSt, isLoadingSt, logout }}
+			value={{
+				tokenSt,
+				setTokenSt,
+				isLoggedInSt,
+				isLoadingSt,
+				logout,
+				currUserSt,
+			}}
 		>
 			{children}
 		</SessionContext.Provider>

@@ -8,6 +8,7 @@ import DailyDiary from "./pages/DailyDiary";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import Profile from "./pages/Profile";
+import ProgressQues from "./pages/ProgressQues";
 
 function App() {
 	return (
@@ -30,6 +31,14 @@ function App() {
 					element={
 						<PrivateRoute>
 							<Profile />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/progress-questionnaire"
+					element={
+						<PrivateRoute>
+							<ProgressQues />
 						</PrivateRoute>
 					}
 				/>
