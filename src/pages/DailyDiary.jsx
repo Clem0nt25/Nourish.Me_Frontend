@@ -32,7 +32,7 @@ function DailyDiary() {
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
-  const searchFoods = async () => {
+  const searchFoods = async (isRetry = false) => {
     setIsLoading(true);
 
     if (!foodName.trim()) {
@@ -46,14 +46,21 @@ function DailyDiary() {
       setResults(response);
     } catch (error) {
       console.log(error);
+      if (!isRetry) {
+        console.log("Error occurred. Trying again in 1 second...");
+        setTimeout(() => searchFoods(true), 1000);
+      } else {
+        console.log("Error occurred again. Aborting.");
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleInputChange = (e) => {
     setFoodName(e.target.value);
-    delay(searchFoods, 200);
+    if (searchRef.current) clearTimeout(searchRef.current);
+    searchRef.current = delay(searchFoods, 300);
   };
 
   const handleScanBarcode = () => {
@@ -63,10 +70,6 @@ function DailyDiary() {
   const handleFoodSelect = (food) => {
     navigate(`/food-details/${food.barcode}`, { state: { food } });
   };
-
-  useEffect(() => {
-    console.log(results);
-  }, [results]);
 
   useEffect(() => {
     return () => {
@@ -115,6 +118,8 @@ function DailyDiary() {
             boxSize="80px"
             isRound
             onClick={handleScanBarcode}
+            boxShadow="lg"
+            _hover={{ boxShadow: "xl" }}
           />
         </Center>
       </VStack>

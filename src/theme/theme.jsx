@@ -20,6 +20,10 @@ const theme = extendTheme({
         filled: {
           field: {
             bg: "white",
+            _focus: {
+              bg: "white",
+              borderColor: "#98FB98",
+            },
           },
         },
       },
@@ -31,8 +35,9 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: "#f8f8f8",
+        bg: "#FFFCF6",
       },
+      p: { color: "#292F36" },
     },
   },
 });

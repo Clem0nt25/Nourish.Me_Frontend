@@ -5,8 +5,10 @@ export const FoodSearchBar = ({ foodName, handleInputChange }) => {
     <HStack>
       <Input
         placeholder="Enter food name"
+        fontWeight={500}
         value={foodName}
         onChange={handleInputChange}
+        border="2px solid lightgray"
       />
     </HStack>
   );

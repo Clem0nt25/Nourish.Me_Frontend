@@ -1,7 +1,5 @@
-export const delay = (func, wait, ...args) => {
+export const delay = (func, wait) => {
   let timeout;
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    func(...args);
-  }, wait);
+  timeout = setTimeout(func, wait);
+  return timeout;
 };

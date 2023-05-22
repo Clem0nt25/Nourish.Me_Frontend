@@ -5,7 +5,7 @@ export const getFood = async (foodName, cancelToken) => {
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_API_URL}/api/getFood`,
-      { foodName },
+      { foodName: `${foodName} ` },
       { cancelToken }
     );
     return response.data.data;
