@@ -2,17 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import {
   VStack,
   Box,
-  Text,
-  HStack,
-  Input,
   IconButton,
   Center,
   Stack,
   Badge,
   useBreakpointValue,
-  Image,
 } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
+import { FoodSearchBar } from "../components/FoodSearchBar";
+import { FoodSearchResults } from "../components/FoodSearchResults";
+import { LoadingIndicator } from "../components/LoadingIndicator";
+import { FoodDiary } from "../components/FoodDiary";
 import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -48,10 +48,12 @@ function DailyDiary() {
         return;
       }
 
+      // Cancel previous request
       if (source) {
         source.cancel("Operation canceled due to new request.");
       }
 
+      // Create a new CancelToken
       const newSource = axios.CancelToken.source();
       setSource(newSource);
 
@@ -78,6 +80,14 @@ function DailyDiary() {
     delay(searchFoods, 200);
   };
 
+  const handleScanBarcode = () => {
+    console.log("Barcode scanning not implemented yet");
+  };
+
+  const handleFoodSelect = (food) => {
+    navigate(`/food-details/${food.barcode}`, { state: { food } });
+  };
+
   useEffect(() => {
     console.log(results);
   }, [results]);
@@ -87,15 +97,6 @@ function DailyDiary() {
       clearTimeout(searchRef.current);
     };
   }, []);
-
-  const handleScanBarcode = () => {
-    // TODO: Implement barcode scanning
-    console.log("Barcode scanning not implemented yet");
-  };
-
-  const handleFoodSelect = (food) => {
-    navigate(`/food-details/${food.barcode}`, { state: { food } });
-  };
 
   const stackDirection = useBreakpointValue({ base: "column", md: "row" });
 
@@ -113,40 +114,22 @@ function DailyDiary() {
         </Box>
 
         {/* Search bar */}
-        <HStack>
-          <Input
-            placeholder="Enter food name"
-            value={foodName}
-            onChange={handleInputChange}
-          />
-        </HStack>
+        <FoodSearchBar
+          foodName={foodName}
+          handleInputChange={handleInputChange}
+        />
 
-        {/* Display loading state  TOD0 - add a spinner*/}
-        {isLoading && <Text>Loading...</Text>}
+        {/* Display loading state */}
+        <LoadingIndicator isLoading={isLoading} />
 
         {/* Display search results */}
-        {results.length > 0 && (
-          <VStack align="start">
-            {results.map((food) => (
-              <Box key={food.barcode} onClick={() => handleFoodSelect(food)}>
-                <Text>{food.foodName}</Text>
-                <Image boxSize="100px" src={food.image} alt={food.foodName} />
-              </Box>
-            ))}
-          </VStack>
-        )}
+        <FoodSearchResults
+          results={results}
+          handleFoodSelect={handleFoodSelect}
+        />
 
         {/* Display diary entries */}
-        {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
-          <Box key={mealType}>
-            <Text fontWeight="bold">{mealType}</Text>
-            <VStack align="start">
-              {diary[mealType].map((food) => (
-                <Text key={food.barcode}>{food.foodName}</Text>
-              ))}
-            </VStack>
-          </Box>
-        ))}
+        <FoodDiary diary={diary} />
 
         <Center>
           <IconButton
