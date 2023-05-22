@@ -30,8 +30,26 @@ function ProgressQues() {
 
 	const handleInput = (e) => {
 		setInputSt({ ...inputSt, [e.target.name]: e.target.value });
-		console.log(e.target.name, e.target.value);
 	};
+
+	const checkPotential = async () => {
+		try {
+			const potentialRes = await fetch(
+				`${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
+					currUserSt._id
+				}`
+			);
+			if (potentialRes.status === 200) {
+				navigate("/daily-diary");
+			}
+		} catch (error) {
+			console(error);
+		}
+	};
+
+	useEffect(() => {
+		checkPotential();
+	}, []);
 
 	//set the boolean array to check if the current form is filled, if not - disable the next button
 	useEffect(() => {
@@ -210,32 +228,23 @@ function ProgressQues() {
 			userId: currUserSt._id,
 		};
 
-		console.log(payload);
+		// console.log(payload);
 
 		try {
-			//make sure didn't have userSpecsCurrent before
-			const potentialRes = await fetch(
-				`${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
+			const response = await fetch(
+				`${import.meta.env.VITE_BASE_API_URL}/api/createUserSpecsCurrent/${
 					currUserSt._id
-				}`
-			);
-			if (potentialRes.status !== 200) {
-				const response = await fetch(
-					`${import.meta.env.VITE_BASE_API_URL}/api/createUserSpecsCurrent/${
-						currUserSt._id
-					}`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(payload),
-					}
-				);
-				console.log(response.status);
-				if (response.status === 201) {
-					navigate("/daily-diary");
+				}`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(payload),
 				}
+			);
+			if (response.status === 201) {
+				navigate("/daily-diary");
 			}
 		} catch (error) {
 			console.log(error);
