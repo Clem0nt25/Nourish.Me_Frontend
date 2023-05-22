@@ -29,14 +29,18 @@ export const getFood = async (foodName, cancelToken) => {
 export const updateFoodDetails = async (barcode, amount, mealType, userId) => {
   const currentDate = new Date().toISOString().slice(0, 10);
 
+  const foodDetails = {
+    barcode,
+    currentDate,
+    amount,
+    mealType,
+    userId,
+  };
+
+  console.log("Sending food details to server:", foodDetails);
+
   await axios.post(
-    `${import.meta.env.VITE_BASE_API_URL}/api/updateFoodByBarcode`,
-    {
-      barcode,
-      currentDate,
-      amount,
-      mealType,
-      userId,
-    }
+    `${import.meta.env.VITE_BASE_API_URL}/api/getFoodByBarcode`,
+    foodDetails
   );
 };

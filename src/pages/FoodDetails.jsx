@@ -22,17 +22,18 @@ import { updateFoodDetails } from "../services/foodService";
 import MainContainer from "../components/MainContainer";
 
 function FoodDetails() {
-  const { barcode, foodName, foodImage } = useParams();
+  const { barcode } = useParams();
   const { currUserSt } = useContext(SessionContext);
   const [amount, setAmount] = useState(1);
   const [inputAmount, setInputAmount] = useState(1);
-  const [mealType, setMealType] = useState("");
+  const [mealType, setMealType] = useState("Breakfast");
   const location = useLocation();
   const selectedFood = location.state.selectedFood;
 
+  console.log(currUserSt);
+
   const handleSave = async () => {
-    await updateFoodDetails(barcode, amount, mealType, currUserSt.id);
-    window.location.reload();
+    await updateFoodDetails(barcode, amount, mealType, currUserSt._id);
   };
 
   const min = 0;
