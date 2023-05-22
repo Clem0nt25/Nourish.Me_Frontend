@@ -8,6 +8,7 @@ import DailyDiary from "./pages/DailyDiary";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import Profile from "./pages/Profile";
+import FoodDetails from "./pages/FoodDetails";
 import ProgressQues from "./pages/ProgressQues";
 
 function App() {
@@ -23,6 +24,14 @@ function App() {
 					element={
 						<PrivateRoute>
 							<DailyDiary />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/food-details/:barcode"
+					element={
+						<PrivateRoute>
+							<FoodDetails />
 						</PrivateRoute>
 					}
 				/>
