@@ -1,4 +1,3 @@
-// theme.js
 import { extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({
@@ -9,7 +8,7 @@ const theme = extendTheme({
         color: "#292F36",
       },
       variants: {
-        "button-icon": { backgroundColor: "#98FB98" },
+        "button-primary": { backgroundColor: "#98FB98" },
       },
       defaultProps: {
         variant: "solid",
@@ -23,6 +22,45 @@ const theme = extendTheme({
             _focus: {
               bg: "white",
               borderColor: "#98FB98",
+            },
+          },
+        },
+      },
+      defaultProps: {
+        variant: "filled",
+      },
+    },
+    Select: {
+      variants: {
+        filled: {
+          field: {
+            borderColor: "lightgrey",
+            borderWidth: 2,
+            borderRadius: "md",
+            bg: "white",
+            _focus: {
+              borderColor: "#98FB98",
+              bg: "white",
+            },
+          },
+        },
+      },
+      defaultProps: {
+        variant: "filled",
+      },
+    },
+    NumberInput: {
+      parts: ["field"],
+      variants: {
+        filled: {
+          field: {
+            borderColor: "lightgrey",
+            borderWidth: 2,
+            borderRadius: "md",
+            bg: "white",
+            _focus: {
+              borderColor: "#98FB98",
+              bg: "white",
             },
           },
         },

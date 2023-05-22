@@ -68,9 +68,10 @@ function DailyDiary() {
   };
 
   const handleFoodSelect = (food) => {
-    navigate(`/food-details/${food.barcode}`, { state: { food } });
+    navigate(`/food-details/${food.barcode}`, {
+      state: { selectedFood: food },
+    });
   };
-
   useEffect(() => {
     return () => {
       clearTimeout(searchRef.current);
@@ -112,7 +113,7 @@ function DailyDiary() {
 
         <Center>
           <IconButton
-            variant="button-icon"
+            variant="button-primary"
             aria-label="Scan a barcode"
             icon={<Box as="img" src={barcodeIcon} boxSize="20" p="3" />}
             boxSize="80px"
