@@ -1,5 +1,5 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import {
   VStack,
@@ -16,6 +16,7 @@ import {
   Select,
   Box,
   Text,
+  Image,
 } from "@chakra-ui/react";
 
 import { updateFoodDetails } from "../services/foodService";
@@ -25,12 +26,10 @@ function FoodDetails() {
   const { barcode } = useParams();
   const { currUserSt } = useContext(SessionContext);
   const [amount, setAmount] = useState(1);
-  const [inputAmount, setInputAmount] = useState(1);
+  const [inputAmount, setInputAmount] = useState(0);
   const [mealType, setMealType] = useState("Breakfast");
   const location = useLocation();
   const selectedFood = location.state.selectedFood;
-
-  console.log(currUserSt);
 
   const handleSave = async () => {
     await updateFoodDetails(barcode, amount, mealType, currUserSt._id);
@@ -52,7 +51,15 @@ function FoodDetails() {
         <Text fontSize="xl" fontWeight="bold">
           {selectedFood.foodName}
         </Text>
-        <img src={selectedFood.image} alt={selectedFood.foodName} />
+        <Image
+          src={selectedFood.image}
+          alt={selectedFood.foodName}
+          borderRadius="8px"
+          boxShadow="lg"
+          marginTop="10px"
+          objectFit="cover"
+          height="auto"
+        />
         <NumberInput
           min={min}
           max={max}

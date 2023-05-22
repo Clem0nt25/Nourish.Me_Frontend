@@ -8,7 +8,7 @@ const theme = extendTheme({
         color: "#292F36",
       },
       variants: {
-        "button-primary": { backgroundColor: "#98FB98" },
+        "button-primary": { backgroundColor: "#98FB98", boxShadow: "md" },
       },
       defaultProps: {
         variant: "solid",
