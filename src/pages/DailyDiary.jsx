@@ -13,11 +13,13 @@ function DailyDiary() {
 				currUserSt._id
 			}`
 		);
+		console.log(response);
 		if (response.status === 200) {
 			const userSpec = await response.json();
 			setUserSpecSt(userSpec);
-			// } else if (response.status === 404) {
-		} else {
+		} else if (response.status === 404) {
+			//not found means we do not have any the user specs current doc in database
+			//means this is a new user
 			navigate("/progress-questionnaire");
 		}
 	};
@@ -30,7 +32,7 @@ function DailyDiary() {
 
 	return (
 		<div>
-			DailyDiary
+			{/* userSpecCurrent data display */}
 			<div>Display "userSpecSt"</div>
 		</div>
 	);

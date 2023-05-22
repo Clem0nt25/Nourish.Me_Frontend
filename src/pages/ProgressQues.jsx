@@ -6,6 +6,7 @@ import ActivityLevelForm from "../components/forms/ActivityLevelForm";
 import BaseInfoForm from "../components/forms/BaseInfoForm";
 import WeightForm from "../components/forms/WeightForm";
 import FinalText from "../components/forms/FinalText";
+import { useNavigate } from "react-router";
 
 function ProgressQues() {
 	const [stepSt, setStepSt] = useState(0);
@@ -24,6 +25,8 @@ function ProgressQues() {
 	const [ifFilledSt, setIfFilledSt] = useState([]);
 
 	const { currUserSt } = useContext(SessionContext);
+
+	const navigate = useNavigate();
 
 	const handleInput = (e) => {
 		setInputSt({ ...inputSt, [e.target.name]: e.target.value });
@@ -93,21 +96,20 @@ function ProgressQues() {
 		return display;
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// console.log(stepSt, inputSt);
+
+		// ----------------------------------------------------------
+		// caculate
 
 		const currDate = new Date();
 		const userAge = currDate.getFullYear() - inputSt.yearOfBirth;
 
-		console.log("currentWeight", typeof inputSt.currentWeight);
-		console.log("goalWeightChange", typeof inputSt.goalWeightChange);
-
 		const goalWeight =
 			Number(inputSt.currentWeight) +
 			(inputSt.mainGoal === "get-lean"
-				? -inputSt.goalWeightChange
-				: inputSt.goalWeightChange);
+				? -Number(inputSt.goalWeightChange)
+				: Number(inputSt.goalWeightChange));
 
 		let activityFactor = 1.2;
 		switch (inputSt.activityLevel) {
@@ -151,31 +153,32 @@ function ProgressQues() {
 				(inputSt.gender === "female" ? -161 : 5)) *
 			activityFactor;
 
-		const goalCalories =
+		const goalCalories = Math.round(
 			baseCalories +
-			(inputSt.mainGoal === "get-lean" ? -coloriesGapDaily : coloriesGapDaily);
+				(inputSt.mainGoal === "get-lean" ? -coloriesGapDaily : coloriesGapDaily)
+		);
 
 		const nutritionProportion = {};
 		switch (inputSt.mainGoal) {
 			case "bulk-up":
-				nutritionProportion.protein = 0.25;
+				nutritionProportion.protein = 0.23;
 				nutritionProportion.carbs = 0.5;
-				nutritionProportion.fat = 0.25;
+				nutritionProportion.fat = 0.27;
 				break;
 			case "get-strong":
-				nutritionProportion.protein = 0.22;
-				nutritionProportion.carbs = 0.53;
-				nutritionProportion.fat = 0.25;
+				nutritionProportion.protein = 0.2;
+				nutritionProportion.carbs = 0.58;
+				nutritionProportion.fat = 0.22;
 				break;
 			case "recompose":
-				nutritionProportion.protein = 0.3;
+				nutritionProportion.protein = 0.28;
 				nutritionProportion.carbs = 0.5;
-				nutritionProportion.fat = 0.2;
+				nutritionProportion.fat = 0.22;
 				break;
 			case "get-lean":
-				nutritionProportion.protein = 0.4;
+				nutritionProportion.protein = 0.38;
 				nutritionProportion.carbs = 0.4;
-				nutritionProportion.fat = 0.2;
+				nutritionProportion.fat = 0.22;
 				break;
 			case "keep-shape":
 				nutritionProportion.protein = 0.2;
@@ -184,9 +187,13 @@ function ProgressQues() {
 				break;
 		}
 
-		const goalProtein = (nutritionProportion.protein * goalCalories) / 4;
-		const goalCarbs = (nutritionProportion.carbs * goalCalories) / 4;
-		const goalFat = (nutritionProportion.fat * goalCalories) / 9;
+		const goalProtein = Math.round(
+			(nutritionProportion.protein * goalCalories) / 4
+		);
+		const goalCarbs = Math.round(
+			(nutritionProportion.carbs * goalCalories) / 4
+		);
+		const goalFat = Math.round((nutritionProportion.fat * goalCalories) / 9);
 
 		const userSpecs = { ...inputSt };
 		delete userSpecs.goalWeightChange;
@@ -204,11 +211,36 @@ function ProgressQues() {
 		};
 
 		console.log(payload);
-	};
 
-	//needed data in the database:
-	//username, mainGoal, caloriesGoal, activityLevel, gender, yearOfBirth,
-	//height, currentWeight, goalWeightChange, goalWeight? weightChangePerWeek, caloriesGoal,
+		try {
+			//make sure didn't have userSpecsCurrent before
+			const potentialRes = await fetch(
+				`${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
+					currUserSt._id
+				}`
+			);
+			if (potentialRes.status !== 200) {
+				const response = await fetch(
+					`${import.meta.env.VITE_BASE_API_URL}/api/createUserSpecsCurrent/${
+						currUserSt._id
+					}`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(payload),
+					}
+				);
+				console.log(response.status);
+				if (response.status === 201) {
+					navigate("/daily-diary");
+				}
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	const barLengthCss =
 		Math.round((1 / 6) * (stepSt + 1) * 100).toString() + "%";
