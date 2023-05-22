@@ -21,7 +21,7 @@ import { delay } from "../utils/delay";
 
 function DailyDiary() {
 	const { currUserSt } = useContext(SessionContext);
-	const [userSpecSt, setUserSpecSt] = useState();
+	const [userSpecsSt, setUserSpecsSt] = useState();
 	const [foodName, setFoodName] = useState("");
 	const [results, setResults] = useState([]);
 	const [diary, setDiary] = useState({
@@ -35,16 +35,15 @@ function DailyDiary() {
 	const searchRef = useRef(null);
 	const navigate = useNavigate();
 
-	const findUserSpec = async () => {
+	const findUserSpecs = async () => {
 		const response = await fetch(
 			`${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
 				currUserSt._id
 			}`
 		);
-		console.log(response);
 		if (response.status === 200) {
-			const userSpec = await response.json();
-			setUserSpecSt(userSpec);
+			const { data: userSpecs } = await response.json();
+			setUserSpecsSt(userSpecs);
 		} else if (response.status === 404) {
 			//not found means we do not have any the user specs current doc in database
 			//means this is a new user
@@ -54,7 +53,7 @@ function DailyDiary() {
 
 	useEffect(() => {
 		if (currUserSt) {
-			findUserSpec();
+			findUserSpecs();
 		}
 	}, [currUserSt]);
 
@@ -105,9 +104,10 @@ function DailyDiary() {
 
 	const stackDirection = useBreakpointValue({ base: "column", md: "row" });
 
+	console.log("User Specs", userSpecsSt);
+
 	return (
 		<MainContainer>
-			<div>Display "userSpecSt"</div>
 			<VStack align="stretch" spacing={4}>
 				{/* Display daily macros */}
 				<Box>
