@@ -9,13 +9,14 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
-import { FoodSearchBar } from "../components/FoodSearchBar";
-import { FoodSearchResults } from "../components/FoodSearchResults";
+import { FoodSearchBar } from "../components/DailyDiary/FoodSearchBar";
+import { FoodSearchResults } from "../components/DailyDiary/FoodSearchResults";
 import { LoadingIndicator } from "../components/LoadingIndicator";
-import { FoodDiary } from "../components/FoodDiary";
+import { FoodDiary } from "../components/DailyDiary/FoodDiary";
 import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { getFood } from "../services/foodService";
+import { delay } from "../utils/delay";
 
 function DailyDiary() {
   const [foodName, setFoodName] = useState("");
@@ -27,52 +28,27 @@ function DailyDiary() {
     Snacks: [],
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [source, setSource] = useState(axios.CancelToken.source());
 
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
-  // Delay function to limit API calls
-  const delay = (func, delay) => {
-    if (searchRef.current) clearTimeout(searchRef.current);
-    searchRef.current = setTimeout(func, delay);
-  };
-
   const searchFoods = async () => {
-    try {
-      setIsLoading(true);
+    setIsLoading(true);
 
-      if (!foodName.trim()) {
-        setResults([]);
-        setIsLoading(false);
-        return;
-      }
-
-      // Cancel previous request
-      if (source) {
-        source.cancel("Operation canceled due to new request.");
-      }
-
-      // Create a new CancelToken
-      const newSource = axios.CancelToken.source();
-      setSource(newSource);
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}/api/getFood`,
-        { foodName },
-        { cancelToken: newSource.token }
-      );
-
-      setResults(response.data.data);
+    if (!foodName.trim()) {
+      setResults([]);
       setIsLoading(false);
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log("Request cancelled");
-      } else {
-        console.log(error);
-      }
-      setIsLoading(false);
+      return;
     }
+
+    try {
+      const response = await getFood(foodName);
+      setResults(response);
+    } catch (error) {
+      console.log(error);
+    }
+
+    setIsLoading(false);
   };
 
   const handleInputChange = (e) => {
