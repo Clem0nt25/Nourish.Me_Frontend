@@ -1,12 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import { SessionContext } from "../contexts/SessionContext";
 import {
-  VStack,
-  Box,
-  IconButton,
-  Center,
-  Stack,
-  Badge,
-  useBreakpointValue,
+	VStack,
+	Box,
+	IconButton,
+	Center,
+	Stack,
+	Badge,
+	useBreakpointValue,
 } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
 import { FoodSearchBar } from "../components/DailyDiary/FoodSearchBar";
@@ -19,113 +20,143 @@ import { getFood } from "../services/foodService";
 import { delay } from "../utils/delay";
 
 function DailyDiary() {
-  const [foodName, setFoodName] = useState("");
-  const [results, setResults] = useState([]);
-  const [diary, setDiary] = useState({
-    Breakfast: [],
-    Lunch: [],
-    Dinner: [],
-    Snacks: [],
-  });
-  const [isLoading, setIsLoading] = useState(false);
+	const { currUserSt } = useContext(SessionContext);
+	const [userSpecsSt, setUserSpecsSt] = useState();
+	const [foodName, setFoodName] = useState("");
+	const [results, setResults] = useState([]);
+	const [diary, setDiary] = useState({
+		Breakfast: [],
+		Lunch: [],
+		Dinner: [],
+		Snacks: [],
+	});
+	const [isLoading, setIsLoading] = useState(false);
 
-  const searchRef = useRef(null);
-  const navigate = useNavigate();
+	const searchRef = useRef(null);
+	const navigate = useNavigate();
 
-  const searchFoods = async (isRetry = false) => {
-    setIsLoading(true);
+	const findUserSpecs = async () => {
+		const response = await fetch(
+			`${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
+				currUserSt._id
+			}`
+		);
+		if (response.status === 200) {
+			const { data: userSpecs } = await response.json();
+			setUserSpecsSt(userSpecs);
+		} else if (response.status === 404) {
+			//not found means we do not have any the user specs current doc in database
+			//means this is a new user
+			navigate("/progress-questionnaire");
+		}
+	};
 
-    if (!foodName.trim()) {
-      setResults([]);
-      setIsLoading(false);
-      return;
-    }
+	useEffect(() => {
+		if (currUserSt) {
+			findUserSpecs();
+		}
+	}, [currUserSt]);
 
-    try {
-      const response = await getFood(foodName);
-      setResults(response);
-    } catch (error) {
-      console.log(error);
-      if (!isRetry) {
-        console.log("Error occurred. Trying again in 1 second...");
-        setTimeout(() => searchFoods(true), 1000);
-      } else {
-        console.log("Error occurred again. Aborting.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+	const searchFoods = async (isRetry = false) => {
+		setIsLoading(true);
 
-  const handleInputChange = (e) => {
-    setFoodName(e.target.value);
-    if (searchRef.current) clearTimeout(searchRef.current);
-    searchRef.current = delay(searchFoods, 300);
-  };
+		if (!foodName.trim()) {
+			setResults([]);
+			setIsLoading(false);
+			return;
+		}
 
-  const handleScanBarcode = () => {
-    console.log("Barcode scanning not implemented yet");
-  };
+		try {
+			const response = await getFood(foodName);
+			setResults(response);
+		} catch (error) {
+			console.log(error);
+			if (!isRetry) {
+				console.log("Error occurred. Trying again in 1 second...");
+				setTimeout(() => searchFoods(true), 1000);
+			} else {
+				console.log("Error occurred again. Aborting.");
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-  const handleFoodSelect = (food) => {
-    navigate(`/food-details/${food.barcode}`, {
-      state: { selectedFood: food },
-    });
-  };
-  useEffect(() => {
-    return () => {
-      clearTimeout(searchRef.current);
-    };
-  }, []);
+	const handleFoodSelect = (food) => {
+		navigate(`/food-details/${food.barcode}`, {
+			state: { selectedFood: food },
+		});
+	};
+	useEffect(() => {
+		return () => {
+			clearTimeout(searchRef.current);
+		};
+	}, []);
+	const handleInputChange = (e) => {
+		setFoodName(e.target.value);
+		if (searchRef.current) clearTimeout(searchRef.current);
+		searchRef.current = delay(searchFoods, 300);
+	};
 
-  const stackDirection = useBreakpointValue({ base: "column", md: "row" });
+	const handleScanBarcode = () => {
+		console.log("Barcode scanning not implemented yet");
+	};
 
-  return (
-    <MainContainer>
-      <VStack align="stretch" spacing={4}>
-        {/* Display daily macros */}
-        <Box>
-          <Stack direction={stackDirection} justify="space-between" spacing={4}>
-            <Badge>Calories: 2000/2000 kcal</Badge>
-            <Badge>Protein: 50g</Badge>
-            <Badge>Carbs: 250g</Badge>
-            <Badge>Fat: 50g</Badge>
-          </Stack>
-        </Box>
+	useEffect(() => {
+		return () => {
+			clearTimeout(searchRef.current);
+		};
+	}, []);
 
-        {/* Search bar */}
-        <FoodSearchBar
-          foodName={foodName}
-          handleInputChange={handleInputChange}
-        />
+	const stackDirection = useBreakpointValue({ base: "column", md: "row" });
 
-        {/* Display loading state */}
-        <LoadingIndicator isLoading={isLoading} />
+	console.log("User Specs", userSpecsSt);
 
-        {/* Display search results */}
-        <FoodSearchResults
-          results={results}
-          handleFoodSelect={handleFoodSelect}
-        />
+	return (
+		<MainContainer>
+			<VStack align="stretch" spacing={4}>
+				{/* Display daily macros */}
+				<Box>
+					<Stack direction={stackDirection} justify="space-between" spacing={4}>
+						<Badge>Calories: 2000/2000 kcal</Badge>
+						<Badge>Protein: 50g</Badge>
+						<Badge>Carbs: 250g</Badge>
+						<Badge>Fat: 50g</Badge>
+					</Stack>
+				</Box>
 
-        {/* Display diary entries */}
-        <FoodDiary diary={diary} />
+				{/* Search bar */}
+				<FoodSearchBar
+					foodName={foodName}
+					handleInputChange={handleInputChange}
+				/>
 
-        <Center>
-          <IconButton
-            variant="button-primary"
-            aria-label="Scan a barcode"
-            icon={<Box as="img" src={barcodeIcon} boxSize="20" p="3" />}
-            boxSize="80px"
-            isRound
-            onClick={handleScanBarcode}
-            boxShadow="lg"
-            _hover={{ boxShadow: "xl" }}
-          />
-        </Center>
-      </VStack>
-    </MainContainer>
-  );
+				{/* Display loading state */}
+				<LoadingIndicator isLoading={isLoading} />
+
+				{/* Display search results */}
+				<FoodSearchResults
+					results={results}
+					handleFoodSelect={handleFoodSelect}
+				/>
+
+				{/* Display diary entries */}
+				<FoodDiary diary={diary} />
+
+				<Center>
+					<IconButton
+						variant="button-primary"
+						aria-label="Scan a barcode"
+						icon={<Box as="img" src={barcodeIcon} boxSize="20" p="3" />}
+						boxSize="80px"
+						isRound
+						onClick={handleScanBarcode}
+						boxShadow="lg"
+						_hover={{ boxShadow: "xl" }}
+					/>
+				</Center>
+			</VStack>
+		</MainContainer>
+	);
 }
-
 export default DailyDiary;
