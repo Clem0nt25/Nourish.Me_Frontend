@@ -2,7 +2,10 @@ export default function ActivityLevelForm({ inputSt, handleInput }) {
 	return (
 		<>
 			<h2>What is your daily activity level?</h2>
-			<p>Including your daily jobs and workouts.</p>
+			<p>
+				Including your daily jobs and workouts. No worries, you can modify it
+				any time you want.
+			</p>
 
 			<div>
 				<input

@@ -20,12 +20,12 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 			<div>
 				<input
 					type="number"
-					name="currWeight"
+					name="currentWeight"
 					placeholder="Your Currrent Weight"
 					min={0}
 					max={500}
-					step={0.5}
-					value={inputSt.currWeight}
+					step={0.1}
+					value={inputSt.currentWeight}
 					onChange={handleInput}
 				/>
 				<span>kg</span>
@@ -44,7 +44,7 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 					</p>
 					<div>
 						<span>
-							Your goal weight will be {inputSt.currWeight}
+							Your goal weight will be {inputSt.currentWeight}
 							{inputSt.mainGoal === "get-lean" ? " - " : " + "}
 						</span>
 						<input
@@ -53,13 +53,13 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 							placeholder="Weight Change"
 							min={0}
 							max={50}
-							step={0.5}
+							step={0.1}
 							value={inputSt.goalWeightChange}
 							onChange={handleInput}
 						/>
 						<span>
 							{" = "}
-							{Number(inputSt.currWeight) +
+							{Number(inputSt.currentWeight) +
 								(inputSt.mainGoal === "get-lean"
 									? -Number(inputSt.goalWeightChange)
 									: Number(inputSt.goalWeightChange))}

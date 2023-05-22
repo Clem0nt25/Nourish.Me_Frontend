@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { SessionContext } from "../contexts/SessionContext";
 import NameForm from "../components/forms/NameForm";
 import GoalForm from "../components/forms/GoalForm";
 import ActivityLevelForm from "../components/forms/ActivityLevelForm";
@@ -15,12 +16,14 @@ function ProgressQues() {
 		gender: "",
 		yearOfBirth: "",
 		height: "",
-		currWeight: "",
+		currentWeight: "",
 		goalWeightChange: "",
 		weightChangePerWeek: "",
 	});
 
 	const [ifFilledSt, setIfFilledSt] = useState([]);
+
+	const { currUserSt } = useContext(SessionContext);
 
 	const handleInput = (e) => {
 		setInputSt({ ...inputSt, [e.target.name]: e.target.value });
@@ -35,11 +38,14 @@ function ProgressQues() {
 		if (inputSt.activityLevel) ifFilled[2] = true;
 		if (inputSt.gender && inputSt.yearOfBirth && inputSt.height)
 			ifFilled[3] = true;
-		if (inputSt.currWeight && inputSt.weightChangePerWeek) ifFilled[4] = true;
+		if (inputSt.currentWeight && inputSt.weightChangePerWeek)
+			ifFilled[4] = true;
 
 		setIfFilledSt(ifFilled);
 	}, [inputSt]);
 
+	//works with the previous function to handle the case that the user does not want weight change,
+	//then fill the input feilds to pass the check to activate "next" button
 	const setWeightPlan = (ifNeedPlan) => {
 		if (ifNeedPlan && inputSt.weightChangePerWeek === "skip") {
 			setInputSt({ ...inputSt, goalWeightChange: "", weightChangePerWeek: "" });
@@ -89,8 +95,120 @@ function ProgressQues() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(stepSt, inputSt);
+		// console.log(stepSt, inputSt);
+
+		const currDate = new Date();
+		const userAge = currDate.getFullYear() - inputSt.yearOfBirth;
+
+		console.log("currentWeight", typeof inputSt.currentWeight);
+		console.log("goalWeightChange", typeof inputSt.goalWeightChange);
+
+		const goalWeight =
+			Number(inputSt.currentWeight) +
+			(inputSt.mainGoal === "get-lean"
+				? -inputSt.goalWeightChange
+				: inputSt.goalWeightChange);
+
+		let activityFactor = 1.2;
+		switch (inputSt.activityLevel) {
+			case "sedentary":
+				activityFactor = 1.2;
+				break;
+			case "light":
+				activityFactor = 1.375;
+				break;
+			case "moderate":
+				activityFactor = 1.55;
+				break;
+			case "active":
+				activityFactor = 1.725;
+				break;
+			case "intense":
+				activityFactor = 1.9;
+				break;
+		}
+
+		let coloriesGapDaily = 0;
+		switch (inputSt.weightChangePerWeek) {
+			case "0.25kg":
+				coloriesGapDaily = 250;
+				break;
+			case "0.5kg":
+				coloriesGapDaily = 500;
+				break;
+			case "0.75kg":
+				coloriesGapDaily = 750;
+				break;
+			case "skip":
+				coloriesGapDaily = 0;
+				break;
+		}
+
+		const baseCalories =
+			(10 * inputSt.currentWeight +
+				6.25 * inputSt.height -
+				5 * userAge +
+				(inputSt.gender === "female" ? -161 : 5)) *
+			activityFactor;
+
+		const goalCalories =
+			baseCalories +
+			(inputSt.mainGoal === "get-lean" ? -coloriesGapDaily : coloriesGapDaily);
+
+		const nutritionProportion = {};
+		switch (inputSt.mainGoal) {
+			case "bulk-up":
+				nutritionProportion.protein = 0.25;
+				nutritionProportion.carbs = 0.5;
+				nutritionProportion.fat = 0.25;
+				break;
+			case "get-strong":
+				nutritionProportion.protein = 0.22;
+				nutritionProportion.carbs = 0.53;
+				nutritionProportion.fat = 0.25;
+				break;
+			case "recompose":
+				nutritionProportion.protein = 0.3;
+				nutritionProportion.carbs = 0.5;
+				nutritionProportion.fat = 0.2;
+				break;
+			case "get-lean":
+				nutritionProportion.protein = 0.4;
+				nutritionProportion.carbs = 0.4;
+				nutritionProportion.fat = 0.2;
+				break;
+			case "keep-shape":
+				nutritionProportion.protein = 0.2;
+				nutritionProportion.carbs = 0.55;
+				nutritionProportion.fat = 0.25;
+				break;
+		}
+
+		const goalProtein = (nutritionProportion.protein * goalCalories) / 4;
+		const goalCarbs = (nutritionProportion.carbs * goalCalories) / 4;
+		const goalFat = (nutritionProportion.fat * goalCalories) / 9;
+
+		const userSpecs = { ...inputSt };
+		delete userSpecs.goalWeightChange;
+
+		const payload = {
+			...userSpecs,
+			goalWeight,
+			goalCalories,
+			goalProtein,
+			goalCarbs,
+			goalFat,
+			goalFiber: 30,
+			data: currDate.toISOString().split("T")[0],
+			userId: currUserSt._id,
+		};
+
+		console.log(payload);
 	};
+
+	//needed data in the database:
+	//username, mainGoal, caloriesGoal, activityLevel, gender, yearOfBirth,
+	//height, currentWeight, goalWeightChange, goalWeight? weightChangePerWeek, caloriesGoal,
 
 	const barLengthCss =
 		Math.round((1 / 6) * (stepSt + 1) * 100).toString() + "%";
@@ -136,8 +254,6 @@ function ProgressQues() {
 }
 
 export default ProgressQues;
-
-//needed data in the database: username, mainGoal, caloriesGoal, activityLevel, gender, yearOfBirth, height, currentWeight, goalWeightChange, goalWeight? weightChangePerWeek, caloriesGoal,
 
 //this part could be some preference food tags of the user
 // const FoodTagForm = () => {
