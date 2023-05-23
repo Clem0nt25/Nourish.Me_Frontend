@@ -32,6 +32,16 @@ function FoodDetails() {
 
   const handleSave = async () => {
     try {
+      console.log(
+        "Saving food details: barcode=",
+        barcode,
+        ", amount=",
+        amount,
+        ", mealType=",
+        mealType,
+        ", userId=",
+        currUserSt._id
+      );
       const newDiary = await updateAndFetchDiary(
         barcode,
         amount,
