@@ -97,14 +97,17 @@ function Profile() {
 		if (countEmpty === 0) {
 			//last step modify the user specs
 			const inputModified = { ...inputSt };
+			//from need weight change to no need
 			if (
 				userSpecsSt.mainGoal !== "recompose" &&
 				userSpecsSt.mainGoal !== "keep-shape" &&
 				(inputSt.mainGoal === "recompose" || inputSt.mainGoal === "keep-shape")
 			) {
 				inputModified.weightChangePerWeek = "skip";
+				inputModified.goalWeightChange = 0;
 			}
-			if (
+			//from no need weight change to need
+			else if (
 				(userSpecsSt.mainGoal === "recompose" ||
 					userSpecsSt.mainGoal === "keep-shape") &&
 				inputSt.mainGoal !== "recompose" &&
@@ -115,6 +118,8 @@ function Profile() {
 
 			//caculate user specs
 			const payload = caculateUserSpecs(inputModified, currUserSt._id);
+
+			console.log("Payload!", payload);
 
 			//talk to api
 			try {
@@ -131,7 +136,6 @@ function Profile() {
 					}
 				);
 				if (response.status === 200) {
-					console.log("Submit!", inputSt);
 					//set ifSpecsUpdatedSt to true to get back user specs again from database
 					setIfSpecsUpdatedSt(true);
 					//close the modals
