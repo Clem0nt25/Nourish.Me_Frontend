@@ -7,6 +7,7 @@ import BaseInfoForm from "../components/forms/BaseInfoForm";
 import WeightForm from "../components/forms/WeightForm";
 import FinalText from "../components/forms/FinalText";
 import { useNavigate } from "react-router";
+import caculateUserSpecs from "../components/forms/caculateUserSpecs";
 
 function ProgressQues() {
 	const [stepSt, setStepSt] = useState(0);
@@ -117,118 +118,8 @@ function ProgressQues() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		// ----------------------------------------------------------
-		// caculate
-
-		const currDate = new Date();
-		const userAge = currDate.getFullYear() - inputSt.yearOfBirth;
-
-		const goalWeight =
-			Number(inputSt.currentWeight) +
-			(inputSt.mainGoal === "get-lean"
-				? -Number(inputSt.goalWeightChange)
-				: Number(inputSt.goalWeightChange));
-
-		let activityFactor = 1.2;
-		switch (inputSt.activityLevel) {
-			case "sedentary":
-				activityFactor = 1.2;
-				break;
-			case "light":
-				activityFactor = 1.375;
-				break;
-			case "moderate":
-				activityFactor = 1.55;
-				break;
-			case "active":
-				activityFactor = 1.725;
-				break;
-			case "intense":
-				activityFactor = 1.9;
-				break;
-		}
-
-		let coloriesGapDaily = 0;
-		switch (inputSt.weightChangePerWeek) {
-			case "0.25kg":
-				coloriesGapDaily = 250;
-				break;
-			case "0.5kg":
-				coloriesGapDaily = 500;
-				break;
-			case "0.75kg":
-				coloriesGapDaily = 750;
-				break;
-			case "skip":
-				coloriesGapDaily = 0;
-				break;
-		}
-
-		const baseCalories =
-			(10 * inputSt.currentWeight +
-				6.25 * inputSt.height -
-				5 * userAge +
-				(inputSt.gender === "female" ? -161 : 5)) *
-			activityFactor;
-
-		const goalCalories = Math.round(
-			baseCalories +
-				(inputSt.mainGoal === "get-lean" ? -coloriesGapDaily : coloriesGapDaily)
-		);
-
-		const nutritionProportion = {};
-		switch (inputSt.mainGoal) {
-			case "bulk-up":
-				nutritionProportion.protein = 0.23;
-				nutritionProportion.carbs = 0.5;
-				nutritionProportion.fat = 0.27;
-				break;
-			case "get-strong":
-				nutritionProportion.protein = 0.2;
-				nutritionProportion.carbs = 0.58;
-				nutritionProportion.fat = 0.22;
-				break;
-			case "recompose":
-				nutritionProportion.protein = 0.28;
-				nutritionProportion.carbs = 0.5;
-				nutritionProportion.fat = 0.22;
-				break;
-			case "get-lean":
-				nutritionProportion.protein = 0.38;
-				nutritionProportion.carbs = 0.4;
-				nutritionProportion.fat = 0.22;
-				break;
-			case "keep-shape":
-				nutritionProportion.protein = 0.2;
-				nutritionProportion.carbs = 0.55;
-				nutritionProportion.fat = 0.25;
-				break;
-		}
-
-		const goalProtein = Math.round(
-			(nutritionProportion.protein * goalCalories) / 4
-		);
-		const goalCarbs = Math.round(
-			(nutritionProportion.carbs * goalCalories) / 4
-		);
-		const goalFat = Math.round((nutritionProportion.fat * goalCalories) / 9);
-
-		const userSpecs = { ...inputSt };
-		delete userSpecs.goalWeightChange;
-
-		const payload = {
-			...userSpecs,
-			goalWeight,
-			goalCalories,
-			goalProtein,
-			goalCarbs,
-			goalFat,
-			goalFiber: 30,
-			data: currDate.toISOString().split("T")[0],
-			userId: currUserSt._id,
-		};
-
-		// console.log(payload);
+		// caculate all other user specs
+		const payload = caculateUserSpecs(inputSt, currUserSt._id);
 
 		try {
 			const response = await fetch(
