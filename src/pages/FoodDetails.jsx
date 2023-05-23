@@ -1,39 +1,24 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
-import {
-  VStack,
-  Button,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Select,
-  Box,
-  Text,
-  Image,
-} from "@chakra-ui/react";
+import { VStack, Button, Text } from "@chakra-ui/react";
 
 import { updateFoodDetails } from "../services/foodService";
 import MainContainer from "../components/MainContainer";
+import FoodImage from "../components/FoodDetails/Image";
+import GramInput from "../components/FoodDetails/GramInput";
+import AmountSlider from "../components/FoodDetails/AmountSlider";
+import MealTypeSelect from "../components/FoodDetails/MealTypeSelect";
 
 function FoodDetails() {
   const { barcode } = useParams();
   const { currUserSt } = useContext(SessionContext);
   const [amount, setAmount] = useState(1);
   const [inputAmount, setInputAmount] = useState(0);
-  const [mealType, setMealType] = useState("Breakfast");
+  const [mealType, setMealType] = useState("breakfast");
   const location = useLocation();
   const selectedFood = location.state.selectedFood;
-
-  const handleSave = async () => {
-    await updateFoodDetails(barcode, amount, mealType, currUserSt._id);
-  };
+  const navigate = useNavigate();
 
   const min = 0;
   const max = 5000;
@@ -45,65 +30,37 @@ function FoodDetails() {
     }
   };
 
+  const handleSave = async () => {
+    try {
+      await updateFoodDetails(barcode, amount, mealType, currUserSt._id);
+      navigate("/daily-diary");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <MainContainer>
       <VStack>
         <Text fontSize="xl" fontWeight="bold">
           {selectedFood.foodName}
         </Text>
-        <Image
-          src={selectedFood.image}
-          alt={selectedFood.foodName}
-          borderRadius="8px"
-          boxShadow="lg"
-          marginTop="10px"
-          objectFit="cover"
-          height="auto"
-        />
-        <NumberInput
+        <FoodImage src={selectedFood.image} alt={selectedFood.foodName} />
+        <GramInput
           min={min}
           max={max}
           value={inputAmount}
           onChange={(valueString) => setInputAmount(valueString)}
           onBlur={handleUnitsBlur}
-        >
-          <NumberInputField bg="#fff" />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-        <Slider
-          min={0}
-          max={800}
-          step={10}
-          value={amount}
-          onChange={(value) => {
-            setAmount(value);
-            setInputAmount(String(value));
-          }}
-        >
-          <SliderTrack>
-            <SliderFilledTrack bg="#98FB98" />
-          </SliderTrack>
-          <SliderThumb boxSize={10}>
-            {amount && (
-              <Box color="gray.500" fontWeight="bold">
-                {amount}g
-              </Box>
-            )}
-          </SliderThumb>
-        </Slider>
-        <Select
-          value={mealType}
-          onChange={(e) => setMealType(e.target.value)}
-          bg="#fff"
-        >
-          <option value="breakfast">Breakfast</option>
-          <option value="lunch">Lunch</option>
-          <option value="dinner">Dinner</option>
-          <option value="snack">Snack</option>
-        </Select>
+        />
+        <AmountSlider
+          amount={amount}
+          setAmount={setAmount}
+          inputAmount={inputAmount}
+          setInputAmount={setInputAmount}
+          min={min}
+          max={max}
+        />
+        <MealTypeSelect mealType={mealType} setMealType={setMealType} />
         <Button onClick={handleSave} variant="button-primary">
           Add To Diary
         </Button>
