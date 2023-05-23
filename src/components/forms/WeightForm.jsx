@@ -5,10 +5,10 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 
 	useEffect(() => {
 		if (inputSt.mainGoal === "recompose" || inputSt.mainGoal === "keep-shape") {
-			setWeightPlan(false);
+			setWeightPlan && setWeightPlan(false);
 			setIfNeedPlanSt(false);
 		} else {
-			setWeightPlan(true);
+			setWeightPlan && setWeightPlan(true);
 			setIfNeedPlanSt(true);
 		}
 	}, []);

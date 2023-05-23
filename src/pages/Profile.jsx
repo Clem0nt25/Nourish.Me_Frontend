@@ -15,6 +15,8 @@ import NameForm from "../components/forms/NameForm";
 import BaseInfoForm from "../components/forms/BaseInfoForm";
 import GoalForm from "../components/forms/GoalForm";
 import WeightForm from "../components/forms/WeightForm";
+import ActivityLevelForm from "../components/forms/ActivityLevelForm";
+import caculateUserSpecs from "../components/forms/caculateUserSpecs";
 
 function Profile() {
 	const { logout, currUserSt } = useContext(SessionContext);
@@ -29,6 +31,7 @@ function Profile() {
 
 	const [userSpecsSt, setUserSpecsSt] = useState();
 	const [inputSt, setInputSt] = useState({});
+	const [ifSpecsUpdatedSt, setIfSpecsUpdatedSt] = useState(true);
 
 	const handleInput = (e) => {
 		setInputSt({ ...inputSt, [e.target.name]: e.target.value });
@@ -50,31 +53,87 @@ function Profile() {
 				yearOfBirth: userSpecs.yearOfBirth,
 				height: userSpecs.height,
 				currentWeight: userSpecs.currentWeight,
-				goalWeight: userSpecs.goalWeight,
 				weightChangePerWeek: userSpecs.weightChangePerWeek,
 			};
-			setUserSpecsSt(currSpecs);
-			delete currSpecs.goalWeight;
-			setInputSt({ ...currSpecs, goalWeightChange: "" });
+			const goalWeightChange = Math.abs(
+				userSpecs.goalWeight - userSpecs.currentWeight
+			);
+			setInputSt({
+				...currSpecs,
+				goalWeightChange,
+			});
+			setUserSpecsSt({
+				...currSpecs,
+				goalWeight: userSpecs.goalWeight,
+				goalWeightChange,
+			});
+			//finish user specs fetch
+			setIfSpecsUpdatedSt(false);
 		} else if (response.status === 404) {
 			navigate("/progress-questionnaire");
 		}
 	};
 
 	useEffect(() => {
-		if (currUserSt) {
-			findUserSpecsAndSet();
+		if (ifSpecsUpdatedSt) {
+			if (currUserSt) {
+				findUserSpecsAndSet();
+			}
 		}
-	}, [currUserSt]);
+	}, [currUserSt, ifSpecsUpdatedSt]);
 
-	console.log(userSpecsSt);
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		//check if there is any empty input fields
+		let countEmpty = 0;
+		for (const key in inputSt) {
+			if (!inputSt[key]) countEmpty += 1;
+		}
+		//if no empty input fields, can submit
+		if (countEmpty === 0) {
+			//caculate user specs
+			const payload = caculateUserSpecs(inputSt, currUserSt._id);
+
+			//talk to api
+			try {
+				const response = await fetch(
+					`${import.meta.env.VITE_BASE_API_URL}/api/updateUserSpecsCurrent/${
+						currUserSt._id
+					}`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(payload),
+					}
+				);
+				if (response.status === 200) {
+					console.log("Submit!", inputSt);
+					//set ifSpecsUpdatedSt to true to get back user specs again from database
+					setIfSpecsUpdatedSt(true);
+					//close the modals
+					const newOpenModals = { ...isOpenModalSt };
+					for (const key in newOpenModals) {
+						newOpenModals[key] = false;
+					}
+					setIsOpenModalSt(newOpenModals);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		}
+	};
+
+	// console.log(userSpecsSt);
 
 	return (
 		userSpecsSt && (
 			<div>
-				Profile page
+				<h4>Profile page</h4>
 				<div className="name-sec">
-					<h4>{userSpecsSt.username}</h4>
+					<h3>{userSpecsSt.username}</h3>
 					<button
 						onClick={() => {
 							setIsOpenModalSt({ ...isOpenModalSt, nameModal: true });
@@ -135,7 +194,33 @@ function Profile() {
 					</button>
 					<div className="specs-content">
 						<h4>Current weight: {userSpecsSt.currentWeight}kg</h4>
-						{/* <h4>Goal weight: {userSpecsSt.}kg</h4> */}
+						<h4>
+							Goal weight:{" "}
+							{userSpecsSt.currentWeight +
+								(userSpecsSt.mainGoal === "get-lean"
+									? -inputSt.goalWeightChange
+									: inputSt.goalWeightChange)}
+							kg
+						</h4>
+						<h4>
+							Aimed weight change per week: {userSpecsSt.weightChangePerWeek}
+						</h4>
+					</div>
+				</div>
+				<div className="activity-level-sec">
+					<h6>-Your Activity Level-</h6>
+					<button
+						onClick={() => {
+							setIsOpenModalSt({ ...isOpenModalSt, activityLevelModal: true });
+						}}
+					>
+						<img src={editLogo} alt="edit" width={20} />
+					</button>
+					<div className="specs-content">
+						<h4>
+							{userSpecsSt.activityLevel[0].toUpperCase() +
+								userSpecsSt.activityLevel.slice(1)}
+						</h4>
 					</div>
 				</div>
 				{/* Name Modal --------------------------------------------------- */}
@@ -144,6 +229,7 @@ function Profile() {
 					isOpen={isOpenModalSt.nameModal}
 					onClose={isOpenModalSt.nameModal}
 					isCentered
+					size="sm"
 				>
 					<ModalOverlay />
 					<ModalContent>
@@ -153,12 +239,19 @@ function Profile() {
 						</ModalBody>
 
 						<ModalFooter>
-							<Button colorScheme="blue" mr={3}>
+							<Button
+								colorScheme="blue"
+								mr={3}
+								onClick={(e) => {
+									handleSubmit(e);
+								}}
+							>
 								Save Change
 							</Button>
 							<Button
 								onClick={() => {
 									setIsOpenModalSt({ ...isOpenModalSt, nameModal: false });
+									setInputSt(userSpecsSt);
 								}}
 							>
 								Cancel
@@ -172,6 +265,7 @@ function Profile() {
 					isOpen={isOpenModalSt.baseInfoModal}
 					onClose={isOpenModalSt.baseInfoModal}
 					isCentered
+					size="sm"
 				>
 					<ModalOverlay />
 					<ModalContent>
@@ -181,12 +275,22 @@ function Profile() {
 						</ModalBody>
 
 						<ModalFooter>
-							<Button colorScheme="blue" mr={3}>
+							<Button
+								colorScheme="blue"
+								mr={3}
+								onClick={(e) => {
+									handleSubmit(e);
+								}}
+							>
 								Save Change
 							</Button>
 							<Button
 								onClick={() => {
-									setIsOpenModalSt({ ...isOpenModalSt, baseInfoModal: false });
+									setIsOpenModalSt({
+										...isOpenModalSt,
+										baseInfoModal: false,
+									});
+									setInputSt(userSpecsSt);
 								}}
 							>
 								Cancel
@@ -200,6 +304,7 @@ function Profile() {
 					isOpen={isOpenModalSt.goalModal}
 					onClose={isOpenModalSt.goalModal}
 					isCentered
+					size="sm"
 				>
 					<ModalOverlay />
 					<ModalContent>
@@ -209,12 +314,19 @@ function Profile() {
 						</ModalBody>
 
 						<ModalFooter>
-							<Button colorScheme="blue" mr={3}>
+							<Button
+								colorScheme="blue"
+								mr={3}
+								onClick={(e) => {
+									handleSubmit(e);
+								}}
+							>
 								Save Change
 							</Button>
 							<Button
 								onClick={() => {
 									setIsOpenModalSt({ ...isOpenModalSt, goalModal: false });
+									setInputSt(userSpecsSt);
 								}}
 							>
 								Cancel
@@ -228,21 +340,68 @@ function Profile() {
 					isOpen={isOpenModalSt.weightModal}
 					onClose={isOpenModalSt.weightModal}
 					isCentered
+					size="sm"
 				>
 					<ModalOverlay />
 					<ModalContent>
 						<ModalHeader>Edit your current weight and goal weight</ModalHeader>
 						<ModalBody pb={6}>
-							{/* <WeightForm inputSt={inputSt} handleInput={handleInput} /> */}
+							<WeightForm inputSt={inputSt} handleInput={handleInput} />
 						</ModalBody>
 
 						<ModalFooter>
-							<Button colorScheme="blue" mr={3}>
+							<Button
+								colorScheme="blue"
+								mr={3}
+								onClick={(e) => {
+									handleSubmit(e);
+								}}
+							>
 								Save Change
 							</Button>
 							<Button
 								onClick={() => {
 									setIsOpenModalSt({ ...isOpenModalSt, weightModal: false });
+									setInputSt(userSpecsSt);
+								}}
+							>
+								Cancel
+							</Button>
+						</ModalFooter>
+					</ModalContent>
+				</Modal>
+				{/* Activity LevelModal Modal --------------------------------------------------- */}
+				<Modal
+					closeOnOverlayClick={false}
+					isOpen={isOpenModalSt.activityLevelModal}
+					onClose={isOpenModalSt.activityLevelModal}
+					isCentered
+					size="sm"
+				>
+					<ModalOverlay />
+					<ModalContent>
+						<ModalHeader>Edit your current weight and goal weight</ModalHeader>
+						<ModalBody pb={6}>
+							<ActivityLevelForm inputSt={inputSt} handleInput={handleInput} />
+						</ModalBody>
+
+						<ModalFooter>
+							<Button
+								colorScheme="blue"
+								mr={3}
+								onClick={(e) => {
+									handleSubmit(e);
+								}}
+							>
+								Save Change
+							</Button>
+							<Button
+								onClick={() => {
+									setIsOpenModalSt({
+										...isOpenModalSt,
+										activityLevelModal: false,
+									});
+									setInputSt(userSpecsSt);
 								}}
 							>
 								Cancel
