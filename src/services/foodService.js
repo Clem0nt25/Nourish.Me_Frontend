@@ -26,7 +26,13 @@ export const getFood = async (foodName, cancelToken) => {
 };
 
 // Update food details in server
-export const updateFoodDetails = async (barcode, amount, mealType, userId) => {
+export const updateFoodDetails = async (
+  barcode,
+  amount,
+  mealType,
+  userId,
+  idToCheckFoodExists
+) => {
   const currentDate = new Date().toISOString().slice(0, 10);
 
   const foodDetails = {
@@ -35,6 +41,7 @@ export const updateFoodDetails = async (barcode, amount, mealType, userId) => {
     amount,
     mealType,
     userId,
+    idToCheckFoodExists,
   };
 
   console.log("Sending food details to server:", foodDetails);
