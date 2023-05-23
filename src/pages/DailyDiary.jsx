@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
-import { v4 as uuidv4 } from "uuid";
+import { useLocation } from "react-router-dom";
 
 import {
   VStack,
@@ -18,7 +18,7 @@ import { LoadingIndicator } from "../components/LoadingIndicator";
 import { FoodDiary } from "../components/DailyDiary/FoodDiary";
 import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
-import { getFood } from "../services/foodService";
+import { getFood, fetchDiary } from "../services/foodService.js";
 import { delay } from "../utils/delay";
 
 function DailyDiary() {
@@ -36,6 +36,18 @@ function DailyDiary() {
 
   const searchRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchInitialDiary = async () => {
+      const diary =
+        location.state?.newDiary || (await fetchDiary(currUserSt._id));
+      console.log("Diary data fetched in DailyDiary:", diary);
+      setDiary(diary);
+    };
+
+    fetchInitialDiary();
+  }, []);
 
   const findUserSpecs = async () => {
     const response = await fetch(

@@ -3,12 +3,12 @@ import { useState, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import { VStack, Button, Text } from "@chakra-ui/react";
 
-import { updateFoodDetails } from "../services/foodService";
 import MainContainer from "../components/MainContainer";
 import FoodImage from "../components/FoodDetails/Image";
 import GramInput from "../components/FoodDetails/GramInput";
 import AmountSlider from "../components/FoodDetails/AmountSlider";
 import MealTypeSelect from "../components/FoodDetails/MealTypeSelect";
+import { updateAndFetchDiary } from "../services/foodService.js";
 
 function FoodDetails() {
   const { barcode } = useParams();
@@ -32,12 +32,19 @@ function FoodDetails() {
 
   const handleSave = async () => {
     try {
-      await updateFoodDetails(barcode, amount, mealType, currUserSt._id);
-      navigate("/daily-diary");
+      const newDiary = await updateAndFetchDiary(
+        barcode,
+        amount,
+        mealType,
+        currUserSt._id
+      );
+      console.log("New diary data in FoodDetails:", newDiary);
+      navigate("/daily-diary", { state: { newDiary } });
     } catch (error) {
-      console.error(error);
+      console.error("Error in FoodDetails handleSave:", error);
     }
   };
+
   return (
     <MainContainer>
       <VStack>

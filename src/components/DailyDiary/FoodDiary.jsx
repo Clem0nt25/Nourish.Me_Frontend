@@ -23,11 +23,11 @@ export const FoodDiary = ({ diary }) => {
             {mealTypeObj.displayName}
           </Text>
           <VStack align="start" mt={2}>
-            {diary[mealTypeObj.logicName].map((food) => (
+            {/* {diary[mealTypeObj.logicName].map((food) => (
               <Text key={food.id} textAlign="center" fontWeight="500">
                 {food.foodName} {food.amount}g
               </Text>
-            ))}
+            ))} */}
           </VStack>
         </Box>
       ))}

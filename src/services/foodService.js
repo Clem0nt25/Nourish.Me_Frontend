@@ -44,3 +44,21 @@ export const updateFoodDetails = async (barcode, amount, mealType, userId) => {
     foodDetails
   );
 };
+
+// Fetch Diary from server
+export const fetchDiary = async (userId) => {
+  const currentDate = new Date().toISOString().slice(0, 10);
+
+  const response = await axios.get(
+    `${import.meta.env.VITE_BASE_API_URL}/api/getUserDiary`,
+    { params: { userId, date: currentDate } }
+  );
+
+  return response.data;
+};
+
+export async function updateAndFetchDiary(barcode, amount, mealType, userId) {
+  await updateFoodDetails(barcode, amount, mealType, userId);
+  const diary = await fetchDiary(userId);
+  return diary;
+}
