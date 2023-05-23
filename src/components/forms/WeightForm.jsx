@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
-export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
+export default function WeightForm({
+	inputSt,
+	handleInput,
+	setWeightPlan,
+	inEdit = false,
+}) {
 	const [ifNeedPlanSt, setIfNeedPlanSt] = useState(false);
 
 	useEffect(() => {
@@ -16,7 +21,7 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 	return (
 		<>
 			<h2>How much do you weigh now?</h2>
-			<p>Be honest! And you can update this later.</p>
+			{!inEdit && <p>Be honest! And you can update this later.</p>}
 			<div>
 				<input
 					type="number"
@@ -38,10 +43,12 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 						How much weight would you like to{" "}
 						{inputSt.mainGoal === "get-lean" ? " lose" : " gain"}?
 					</h2>
-					<p>
-						Don't worry. You can be bold for now! You can always change it
-						later.
-					</p>
+					{!inEdit && (
+						<p>
+							Don't worry. You can be bold for now! You can always change it
+							later.
+						</p>
+					)}
 					<div>
 						<span>
 							Your goal weight will be {inputSt.currentWeight}
@@ -71,10 +78,12 @@ export default function WeightForm({ inputSt, handleInput, setWeightPlan }) {
 						How quickly do you plan to
 						{inputSt.mainGoal === "get-lean" ? " lose fat" : " gain muscle"} ?
 					</h2>
-					<p>
-						Choose how much weight you want to{" "}
-						{inputSt.mainGoal === "get-lean" ? " lose" : "gain"} each week.
-					</p>
+					{!inEdit && (
+						<p>
+							Choose how much weight you want to{" "}
+							{inputSt.mainGoal === "get-lean" ? " lose" : "gain"} each week.
+						</p>
+					)}
 					<div>
 						<input
 							type="radio"

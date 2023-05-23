@@ -1,7 +1,7 @@
-export default function GoalForm({ inputSt, handleInput }) {
+export default function GoalForm({ inputSt, handleInput, inEdit = false }) {
 	return (
 		<>
-			<h2>Thanks {inputSt.username}! Now for your goals.</h2>
+			{!inEdit && <h2>Thanks {inputSt.username}! Now for your goals.</h2>}
 			<p>Select your main diet goal below.</p>
 
 			<div>

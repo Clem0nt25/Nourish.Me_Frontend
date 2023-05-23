@@ -1,11 +1,17 @@
-export default function ActivityLevelForm({ inputSt, handleInput }) {
+export default function ActivityLevelForm({
+	inputSt,
+	handleInput,
+	inEdit = false,
+}) {
 	return (
 		<>
 			<h2>What is your daily activity level?</h2>
-			<p>
-				Including your daily jobs and workouts. No worries, you can modify it
-				any time you want.
-			</p>
+			{!inEdit && (
+				<p>
+					Including your daily jobs and workouts. No worries, you can modify it
+					any time you want.
+				</p>
+			)}
 
 			<div>
 				<input

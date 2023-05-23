@@ -55,6 +55,7 @@ function Profile() {
 				currentWeight: userSpecs.currentWeight,
 				weightChangePerWeek: userSpecs.weightChangePerWeek,
 			};
+
 			const goalWeightChange = Math.abs(
 				userSpecs.goalWeight - userSpecs.currentWeight
 			);
@@ -88,12 +89,32 @@ function Profile() {
 		//check if there is any empty input fields
 		let countEmpty = 0;
 		for (const key in inputSt) {
-			if (!inputSt[key]) countEmpty += 1;
+			if (key !== "goalWeightChange") {
+				if (!inputSt[key]) countEmpty += 1;
+			}
 		}
 		//if no empty input fields, can submit
 		if (countEmpty === 0) {
+			//last step modify the user specs
+			const inputModified = { ...inputSt };
+			if (
+				userSpecsSt.mainGoal !== "recompose" &&
+				userSpecsSt.mainGoal !== "keep-shape" &&
+				(inputSt.mainGoal === "recompose" || inputSt.mainGoal === "keep-shape")
+			) {
+				inputModified.weightChangePerWeek = "skip";
+			}
+			if (
+				(userSpecsSt.mainGoal === "recompose" ||
+					userSpecsSt.mainGoal === "keep-shape") &&
+				inputSt.mainGoal !== "recompose" &&
+				inputSt.mainGoal !== "keep-shape"
+			) {
+				inputModified.weightChangePerWeek = "0.25kg";
+			}
+
 			//caculate user specs
-			const payload = caculateUserSpecs(inputSt, currUserSt._id);
+			const payload = caculateUserSpecs(inputModified, currUserSt._id);
 
 			//talk to api
 			try {
@@ -126,8 +147,6 @@ function Profile() {
 		}
 	};
 
-	// console.log(userSpecsSt);
-
 	return (
 		userSpecsSt && (
 			<div>
@@ -145,13 +164,7 @@ function Profile() {
 				<hr />
 				<div className="basic-info-sec">
 					<h6>-Base informaton-</h6>
-					<button
-						onClick={() => {
-							setIsOpenModalSt({ ...isOpenModalSt, baseInfoModal: true });
-						}}
-					>
-						<img src={editLogo} alt="edit" width={20} />
-					</button>
+
 					<div className="specs-content">
 						<h4>
 							Gender:{" "}
@@ -161,17 +174,17 @@ function Profile() {
 						<h4>Year of birth: {userSpecsSt.yearOfBirth}</h4>
 						<h4>Height: {userSpecsSt.height}cm</h4>
 					</div>
-				</div>
-				<hr />
-				<div className="goal-sec">
-					<h6>-Your diet goal-</h6>
 					<button
 						onClick={() => {
-							setIsOpenModalSt({ ...isOpenModalSt, goalModal: true });
+							setIsOpenModalSt({ ...isOpenModalSt, baseInfoModal: true });
 						}}
 					>
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
+				</div>
+				<hr />
+				<div className="goal-sec">
+					<h6>-Your diet goal-</h6>
 					<div className="specs-content">
 						<h4>
 							{userSpecsSt.mainGoal
@@ -182,9 +195,39 @@ function Profile() {
 								.join(" ")}
 						</h4>
 					</div>
+					<button
+						onClick={() => {
+							setIsOpenModalSt({ ...isOpenModalSt, goalModal: true });
+						}}
+					>
+						<img src={editLogo} alt="edit" width={20} />
+					</button>
 				</div>
+				<hr />
 				<div className="weight-sec">
 					<h6>-Your weight-</h6>
+					<div className="specs-content">
+						<h4>Current weight: {userSpecsSt.currentWeight}kg</h4>
+						{!(
+							userSpecsSt.mainGoal === "recompose" ||
+							userSpecsSt.mainGoal === "keep-shape"
+						) && (
+							<>
+								<h4>
+									Goal weight:{" "}
+									{userSpecsSt.currentWeight +
+										(userSpecsSt.mainGoal === "get-lean"
+											? -inputSt.goalWeightChange
+											: inputSt.goalWeightChange)}
+									kg
+								</h4>
+								<h4>
+									Aimed weight change per week:{" "}
+									{userSpecsSt.weightChangePerWeek}
+								</h4>
+							</>
+						)}
+					</div>
 					<button
 						onClick={() => {
 							setIsOpenModalSt({ ...isOpenModalSt, weightModal: true });
@@ -192,23 +235,16 @@ function Profile() {
 					>
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
-					<div className="specs-content">
-						<h4>Current weight: {userSpecsSt.currentWeight}kg</h4>
-						<h4>
-							Goal weight:{" "}
-							{userSpecsSt.currentWeight +
-								(userSpecsSt.mainGoal === "get-lean"
-									? -inputSt.goalWeightChange
-									: inputSt.goalWeightChange)}
-							kg
-						</h4>
-						<h4>
-							Aimed weight change per week: {userSpecsSt.weightChangePerWeek}
-						</h4>
-					</div>
 				</div>
+				<hr />
 				<div className="activity-level-sec">
 					<h6>-Your Activity Level-</h6>
+					<div className="specs-content">
+						<h4>
+							{userSpecsSt.activityLevel[0].toUpperCase() +
+								userSpecsSt.activityLevel.slice(1)}
+						</h4>
+					</div>
 					<button
 						onClick={() => {
 							setIsOpenModalSt({ ...isOpenModalSt, activityLevelModal: true });
@@ -216,13 +252,10 @@ function Profile() {
 					>
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
-					<div className="specs-content">
-						<h4>
-							{userSpecsSt.activityLevel[0].toUpperCase() +
-								userSpecsSt.activityLevel.slice(1)}
-						</h4>
-					</div>
 				</div>
+				<hr />
+				<button onClick={logout}>Log out</button>
+				{/* 5 Modals --------------------------------------------------- */}
 				{/* Name Modal --------------------------------------------------- */}
 				<Modal
 					closeOnOverlayClick={false}
@@ -235,7 +268,7 @@ function Profile() {
 					<ModalContent>
 						<ModalHeader>Edit your name</ModalHeader>
 						<ModalBody pb={6}>
-							<NameForm inputSt={inputSt} handleInput={handleInput} />
+							<NameForm inputSt={inputSt} handleInput={handleInput} inEdit />
 						</ModalBody>
 
 						<ModalFooter>
@@ -310,7 +343,7 @@ function Profile() {
 					<ModalContent>
 						<ModalHeader>Edit your diet goal</ModalHeader>
 						<ModalBody pb={6}>
-							<GoalForm inputSt={inputSt} handleInput={handleInput} />
+							<GoalForm inputSt={inputSt} handleInput={handleInput} inEdit />
 						</ModalBody>
 
 						<ModalFooter>
@@ -346,7 +379,7 @@ function Profile() {
 					<ModalContent>
 						<ModalHeader>Edit your current weight and goal weight</ModalHeader>
 						<ModalBody pb={6}>
-							<WeightForm inputSt={inputSt} handleInput={handleInput} />
+							<WeightForm inputSt={inputSt} handleInput={handleInput} inEdit />
 						</ModalBody>
 
 						<ModalFooter>
@@ -382,7 +415,11 @@ function Profile() {
 					<ModalContent>
 						<ModalHeader>Edit your current weight and goal weight</ModalHeader>
 						<ModalBody pb={6}>
-							<ActivityLevelForm inputSt={inputSt} handleInput={handleInput} />
+							<ActivityLevelForm
+								inputSt={inputSt}
+								handleInput={handleInput}
+								inEdit
+							/>
 						</ModalBody>
 
 						<ModalFooter>
@@ -410,7 +447,6 @@ function Profile() {
 					</ModalContent>
 				</Modal>
 				{/* --------------------------------------------------- */}
-				<button onClick={logout}>Log out</button>
 			</div>
 		)
 	);
