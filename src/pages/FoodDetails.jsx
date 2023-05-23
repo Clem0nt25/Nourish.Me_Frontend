@@ -1,5 +1,5 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import { VStack, Button, Text } from "@chakra-ui/react";
 
@@ -8,16 +8,17 @@ import FoodImage from "../components/FoodDetails/Image";
 import GramInput from "../components/FoodDetails/GramInput";
 import AmountSlider from "../components/FoodDetails/AmountSlider";
 import MealTypeSelect from "../components/FoodDetails/MealTypeSelect";
-import { updateAndFetchDiary } from "../services/foodService.js";
+import { updateAndFetchDiary, getFood } from "../services/foodService.js";
 
 function FoodDetails() {
   const { barcode } = useParams();
   const { currUserSt } = useContext(SessionContext);
-  const [amount, setAmount] = useState(1);
-  const [inputAmount, setInputAmount] = useState(0);
-  const [mealType, setMealType] = useState("breakfast");
   const location = useLocation();
-  const selectedFood = location.state.selectedFood;
+  const selectedFood = location.state?.selectedFood || {}; // if no food is passed, it will be an empty
+  const [amount, setAmount] = useState(selectedFood.amount || 1);
+  const [inputAmount, setInputAmount] = useState(selectedFood.amount || 0);
+  const [mealType, setMealType] = useState("breakfast");
+
   const navigate = useNavigate();
 
   const min = 0;
@@ -29,6 +30,17 @@ function FoodDetails() {
       setAmount(value);
     }
   };
+
+  useEffect(() => {
+    if (!selectedFood.foodName) {
+      // if no food is passed, fetch it from the server
+      getFood(barcode)
+        .then((foods) => {
+          setAmount(foods[0].amount);
+        })
+        .catch(console.error);
+    }
+  }, [barcode]);
 
   const handleSave = async () => {
     try {

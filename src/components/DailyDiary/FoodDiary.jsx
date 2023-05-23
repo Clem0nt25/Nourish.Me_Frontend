@@ -10,9 +10,12 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { GiFruitBowl } from "react-icons/gi";
+import { useNavigate } from "react-router-dom";
 
 export const FoodDiary = ({ diary }) => {
   const { isOpen, onToggle } = useDisclosure(); // add more states for multiple meal types
+  const navigate = useNavigate();
+
   return (
     <>
       {[
@@ -25,11 +28,12 @@ export const FoodDiary = ({ diary }) => {
           key={mealTypeObj.logicName}
           textAlign="center"
           bg="white"
-          p={2}
+          p={3}
           border="1px solid lightgrey"
           borderRadius="md"
           boxShadow="md"
           mb={4}
+          cursor="pointer"
         >
           <Flex align="center">
             <Text fontWeight="bold" fontSize="lg">
@@ -62,6 +66,12 @@ export const FoodDiary = ({ diary }) => {
                     boxShadow="md"
                     mt={2}
                     bg="white"
+                    onClick={() => {
+                      navigate(`/food-details/${food.barcode}`, {
+                        state: { selectedFood: food },
+                      });
+                      console.log("Clicked food in diary", food);
+                    }}
                   >
                     <Flex align="center">
                       <GiFruitBowl size={24} /> {/* Placeholder icon */}
