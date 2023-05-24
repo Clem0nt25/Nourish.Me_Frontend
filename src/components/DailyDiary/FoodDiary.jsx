@@ -1,20 +1,28 @@
+import React, { useState } from "react";
 import {
   Box,
   Flex,
   Text,
   VStack,
   Collapse,
-  useDisclosure,
   Spacer,
   IconButton,
+  Image,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { GiFruitBowl } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
+import foodLogo from "../../assets/food-logo.png";
 
 export const FoodDiary = ({ diary }) => {
-  const { isOpen, onToggle } = useDisclosure(); // add more states for multiple meal types
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState({});
+
+  const handleToggle = (mealType) => {
+    setIsOpen((prevState) => ({
+      ...prevState,
+      [mealType]: !prevState[mealType],
+    }));
+  };
 
   return (
     <>
@@ -42,18 +50,18 @@ export const FoodDiary = ({ diary }) => {
             <Spacer />
             <IconButton
               icon={
-                isOpen ? (
+                isOpen[mealTypeObj.logicName] ? (
                   <ChevronDownIcon />
                 ) : (
                   <ChevronDownIcon transform="rotate(-180deg)" />
                 )
               }
               variant="ghost"
-              onClick={onToggle}
+              onClick={() => handleToggle(mealTypeObj.logicName)}
             />
           </Flex>
 
-          <Collapse in={isOpen}>
+          <Collapse in={isOpen[mealTypeObj.logicName]}>
             <VStack align="stretch" mt={2}>
               {diary[mealTypeObj.logicName] &&
                 diary[mealTypeObj.logicName].foods &&
@@ -74,7 +82,7 @@ export const FoodDiary = ({ diary }) => {
                     }}
                   >
                     <Flex align="center">
-                      <GiFruitBowl size={24} /> {/* Placeholder icon */}
+                      <Image src={foodLogo} alt="Food Logo" boxSize={6} />
                       <Text ml={2} fontWeight="500">
                         {food.foodName}
                       </Text>
