@@ -22,7 +22,6 @@ function Profile() {
 	const { logout, currUserSt } = useContext(SessionContext);
 	const navigate = useNavigate();
 	const [isOpenModalSt, setIsOpenModalSt] = useState({
-		nameModal: false,
 		goalModal: false,
 		activityLevelModal: false,
 		baseInfoMoadl: false,
@@ -76,10 +75,8 @@ function Profile() {
 	};
 
 	useEffect(() => {
-		if (ifSpecsUpdatedSt) {
-			if (currUserSt) {
-				findUserSpecsAndSet();
-			}
+		if (ifSpecsUpdatedSt && currUserSt) {
+			findUserSpecsAndSet();
 		}
 	}, [currUserSt, ifSpecsUpdatedSt]);
 
@@ -153,30 +150,26 @@ function Profile() {
 
 	return (
 		userSpecsSt && (
-			<div>
-				<h4>Profile page</h4>
-				<div className="name-sec">
-					<h3>{userSpecsSt.username}</h3>
-					<button
-						onClick={() => {
-							setIsOpenModalSt({ ...isOpenModalSt, nameModal: true });
-						}}
-					>
-						<img src={editLogo} alt="edit" width={20} />
-					</button>
-				</div>
-				<hr />
-				<div className="basic-info-sec">
-					<h6>-Base informaton-</h6>
-
-					<div className="specs-content">
-						<h4>
-							Gender:{" "}
-							{userSpecsSt.gender[0].toUpperCase() +
-								userSpecsSt.gender.slice(1)}
-						</h4>
-						<h4>Year of birth: {userSpecsSt.yearOfBirth}</h4>
-						<h4>Height: {userSpecsSt.height}cm</h4>
+			<div className="profile-page">
+				<h3>{userSpecsSt.username} :)</h3>
+				<div className="profile-specs-contatiner">
+					<div>
+						<div className="spec-titles">
+							<h6>-Basic informaton-</h6>
+						</div>
+						<div className="specs-content">
+							<p>Gender</p>
+							<h4>
+								{userSpecsSt.gender[0].toUpperCase() +
+									userSpecsSt.gender.slice(1)}
+							</h4>
+							<div className="specs-content-gap"></div>
+							<p>Year of birth</p>
+							<h4>{userSpecsSt.yearOfBirth}</h4>
+							<div className="specs-content-gap"></div>
+							<p>Height</p>
+							<h4>{userSpecsSt.height}cm</h4>
+						</div>
 					</div>
 					<button
 						onClick={() => {
@@ -186,18 +179,22 @@ function Profile() {
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
 				</div>
-				<hr />
-				<div className="goal-sec">
-					<h6>-Your diet goal-</h6>
-					<div className="specs-content">
-						<h4>
-							{userSpecsSt.mainGoal
-								.split("-")
-								.map((word) => {
-									return word[0].toUpperCase() + word.slice(1);
-								})
-								.join(" ")}
-						</h4>
+				<div className="profile-specs-contatiner">
+					<div>
+						<div className="spec-titles">
+							<h6>-Your diet goal-</h6>
+						</div>
+						<div className="specs-content">
+							<p>You now aim to</p>
+							<h4>
+								{userSpecsSt.mainGoal
+									.split("-")
+									.map((word) => {
+										return word[0].toUpperCase() + word.slice(1);
+									})
+									.join(" ")}
+							</h4>
+						</div>
 					</div>
 					<button
 						onClick={() => {
@@ -207,30 +204,34 @@ function Profile() {
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
 				</div>
-				<hr />
-				<div className="weight-sec">
-					<h6>-Your weight-</h6>
-					<div className="specs-content">
-						<h4>Current weight: {userSpecsSt.currentWeight}kg</h4>
-						{!(
-							userSpecsSt.mainGoal === "recompose" ||
-							userSpecsSt.mainGoal === "keep-shape"
-						) && (
-							<>
-								<h4>
-									Goal weight:{" "}
-									{userSpecsSt.currentWeight +
-										(userSpecsSt.mainGoal === "get-lean"
-											? -inputSt.goalWeightChange
-											: inputSt.goalWeightChange)}
-									kg
-								</h4>
-								<h4>
-									Aimed weight change per week:{" "}
-									{userSpecsSt.weightChangePerWeek}
-								</h4>
-							</>
-						)}
+				<div className="profile-specs-contatiner">
+					<div>
+						<div className="spec-titles">
+							<h6>-Your weight information-</h6>
+						</div>
+						<div className="specs-content">
+							<p>Current weight</p>
+							<h4>{userSpecsSt.currentWeight}kg</h4>
+							{!(
+								userSpecsSt.mainGoal === "recompose" ||
+								userSpecsSt.mainGoal === "keep-shape"
+							) && (
+								<>
+									<div className="specs-content-gap"></div>
+									<p>Goal weight</p>
+									<h4>
+										{userSpecsSt.currentWeight +
+											(userSpecsSt.mainGoal === "get-lean"
+												? -inputSt.goalWeightChange
+												: inputSt.goalWeightChange)}
+										kg
+									</h4>
+									<div className="specs-content-gap"></div>
+									<p>Aimed weight change</p>
+									<h4>{userSpecsSt.weightChangePerWeek} per week</h4>
+								</>
+							)}
+						</div>
 					</div>
 					<button
 						onClick={() => {
@@ -240,14 +241,18 @@ function Profile() {
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
 				</div>
-				<hr />
-				<div className="activity-level-sec">
-					<h6>-Your Activity Level-</h6>
-					<div className="specs-content">
-						<h4>
-							{userSpecsSt.activityLevel[0].toUpperCase() +
-								userSpecsSt.activityLevel.slice(1)}
-						</h4>
+				<div className="profile-specs-contatiner">
+					<div>
+						<div className="spec-titles">
+							<h6>-Your activity level-</h6>
+						</div>
+						<div className="specs-content">
+							<p>Daily life and work-out intensity</p>
+							<h4>
+								{userSpecsSt.activityLevel[0].toUpperCase() +
+									userSpecsSt.activityLevel.slice(1)}
+							</h4>
+						</div>
 					</div>
 					<button
 						onClick={() => {
@@ -257,45 +262,12 @@ function Profile() {
 						<img src={editLogo} alt="edit" width={20} />
 					</button>
 				</div>
-				<hr />
-				<button onClick={logout}>Log out</button>
-				{/* 5 Modals --------------------------------------------------- */}
-				{/* Name Modal --------------------------------------------------- */}
-				<Modal
-					closeOnOverlayClick={false}
-					isOpen={isOpenModalSt.nameModal}
-					onClose={isOpenModalSt.nameModal}
-					isCentered
-					size="sm"
-				>
-					<ModalOverlay />
-					<ModalContent>
-						<ModalHeader>Edit your name</ModalHeader>
-						<ModalBody pb={6}>
-							<NameForm inputSt={inputSt} handleInput={handleInput} inEdit />
-						</ModalBody>
-
-						<ModalFooter>
-							<Button
-								colorScheme="blue"
-								mr={3}
-								onClick={(e) => {
-									handleSubmit(e);
-								}}
-							>
-								Save Change
-							</Button>
-							<Button
-								onClick={() => {
-									setIsOpenModalSt({ ...isOpenModalSt, nameModal: false });
-									setInputSt(userSpecsSt);
-								}}
-							>
-								Cancel
-							</Button>
-						</ModalFooter>
-					</ModalContent>
-				</Modal>
+				<div className="profile-btn-contatiner">
+					<button className="profile-logout-btn" onClick={logout}>
+						Log out
+					</button>
+				</div>
+				{/* 4 Modals --------------------------------------------------- */}
 				{/* Base Info Modal --------------------------------------------------- */}
 				<Modal
 					closeOnOverlayClick={false}
@@ -308,6 +280,7 @@ function Profile() {
 					<ModalContent>
 						<ModalHeader>Edit your base info</ModalHeader>
 						<ModalBody pb={6}>
+							<NameForm inputSt={inputSt} handleInput={handleInput} inEdit />
 							<BaseInfoForm inputSt={inputSt} handleInput={handleInput} />
 						</ModalBody>
 
