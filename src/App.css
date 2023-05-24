@@ -4,17 +4,8 @@
 	text-align: center;
 }*/
 
-.progressbar {
-	margin: 10px auto;
-	width: 400px;
-	height: 5px;
-	background-color: rgb(198, 198, 198);
-}
-
-.progressbar div {
-	height: 100%;
-	background-color: rgb(38, 142, 227);
-}
+/* ------------------------------------- */
+/* profile page */
 
 .profile-page {
 	padding: 20px 10px;
@@ -78,4 +69,112 @@
 }
 .specs-content-gap {
 	height: 8px;
+}
+
+/* profile page */
+/* ------------------------------------- */
+/* progress quesionnaire */
+
+.progress-ques-page {
+	text-align: center;
+	line-height: normal;
+	background-color: white;
+	margin: 50px;
+	padding: 20px 20px 30px 20px;
+	box-shadow: 0px 0px 5px #b2abbb;
+}
+.progressbar {
+	margin: 5px auto 15px auto;
+	width: 90%;
+	height: 5px;
+	background-color: rgb(198, 198, 198);
+	border-radius: 3px;
+}
+.progressbar div {
+	height: 100%;
+	background-color: rgb(38, 142, 227);
+	border-radius: 3px;
+}
+
+.progress-gap-div {
+	height: 10px;
+}
+.progress-ques-btn-div {
+	display: flex;
+	justify-content: center;
+	gap: 30px;
+	padding-top: 20px;
+}
+.progress-input-div {
+	text-align: left;
+}
+
+.progress-input-div h2 {
+	font-size: 24px;
+	font-weight: 500;
+	margin-bottom: 5px;
+}
+.progress-input-div p {
+	font-size: 18px;
+	font-weight: 400;
+	margin-bottom: 10px;
+	color: rgb(135, 135, 135);
+}
+
+.progress-form-radio-div input {
+	position: absolute;
+	opacity: 0;
+}
+.progress-form-radio-div button {
+	width: 100%;
+	text-align: left;
+	padding: 5px 8px 10px 8px;
+	margin-top: 8px;
+	border: 1px solid rgb(198, 198, 198);
+	border-radius: 5px;
+	transition: all 200ms ease;
+}
+.progress-form-radio-div input:checked + button {
+	background-color: #38a169;
+	box-shadow: 0 0 12px rgb(198, 198, 198);
+	transform: scale(1.03);
+}
+
+.progress-form-radio-div input:hover + button {
+	box-shadow: 0 0 12px rgb(198, 198, 198);
+}
+
+.progress-form-radio-div input:checked + button,
+.progress-form-radio-div input:checked + button {
+	color: white;
+}
+
+.gender-radio {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.progress-num-input {
+	position: relative;
+}
+.progress-num-input span {
+	position: absolute;
+	right: 25px;
+	top: 3px;
+	font-size: 20px;
+	font-weight: 400;
+}
+
+.goal-weight-line div {
+	display: flex;
+	align-items: center;
+}
+.goal-weight-line span {
+	font-size: 18px;
+	margin-bottom: 3px;
+	font-weight: 500;
+}
+.short-num-input {
+	margin: 10px;
 }

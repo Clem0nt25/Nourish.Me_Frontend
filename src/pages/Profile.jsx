@@ -286,7 +286,7 @@ function Profile() {
 
 						<ModalFooter>
 							<Button
-								colorScheme="blue"
+								colorScheme="green"
 								mr={3}
 								onClick={(e) => {
 									handleSubmit(e);
@@ -325,7 +325,7 @@ function Profile() {
 
 						<ModalFooter>
 							<Button
-								colorScheme="blue"
+								colorScheme="green"
 								mr={3}
 								onClick={(e) => {
 									handleSubmit(e);
@@ -361,7 +361,7 @@ function Profile() {
 
 						<ModalFooter>
 							<Button
-								colorScheme="blue"
+								colorScheme="green"
 								mr={3}
 								onClick={(e) => {
 									handleSubmit(e);
@@ -401,7 +401,7 @@ function Profile() {
 
 						<ModalFooter>
 							<Button
-								colorScheme="blue"
+								colorScheme="green"
 								mr={3}
 								onClick={(e) => {
 									handleSubmit(e);

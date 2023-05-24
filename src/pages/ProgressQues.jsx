@@ -8,6 +8,7 @@ import WeightForm from "../components/forms/WeightForm";
 import FinalText from "../components/forms/FinalText";
 import { useNavigate } from "react-router";
 import caculateUserSpecs from "../components/forms/caculateUserSpecs";
+import { Button } from "@chakra-ui/react";
 
 function ProgressQues() {
 	const [stepSt, setStepSt] = useState(0);
@@ -31,6 +32,7 @@ function ProgressQues() {
 
 	const handleInput = (e) => {
 		setInputSt({ ...inputSt, [e.target.name]: e.target.value });
+		// console.log(e.target.name, e.target.value);
 	};
 
 	const checkPotential = async () => {
@@ -146,16 +148,19 @@ function ProgressQues() {
 		Math.round((1 / 6) * (stepSt + 1) * 100).toString() + "%";
 
 	return (
-		<div>
+		<div className="progress-ques-page">
 			<div className="progressbar">
 				<div style={{ width: barLengthCss }}></div>
 			</div>
 			<form onSubmit={handleSubmit}>
-				<div>{displayByStep()}</div>
-				<div>
-					<button
+				<div className="progress-input-div">{displayByStep()}</div>
+				<div className="progress-ques-btn-div">
+					<Button
+						className="progress-btn"
 						type="button"
 						hidden={stepSt === 0 ? true : false}
+						colorScheme="green"
+						variant="outline"
 						onClick={() => {
 							if (stepSt > 0) {
 								setStepSt((preStep) => preStep - 1);
@@ -163,11 +168,14 @@ function ProgressQues() {
 						}}
 					>
 						Back
-					</button>
-					<button
+					</Button>
+					<Button
+						className="progress-btn"
 						type="button"
-						disabled={!ifFilledSt[stepSt]}
+						isDisabled={!ifFilledSt[stepSt]}
 						hidden={stepSt < 5 ? false : true}
+						colorScheme="green"
+						variant="solid"
 						onClick={() => {
 							if (stepSt < 5) {
 								setStepSt((preStep) => preStep + 1);
@@ -175,10 +183,15 @@ function ProgressQues() {
 						}}
 					>
 						Next
-					</button>
-					<button type="submit" hidden={stepSt === 5 ? false : true}>
+					</Button>
+					<Button
+						type="submit"
+						hidden={stepSt === 5 ? false : true}
+						colorScheme="green"
+						variant="solid"
+					>
 						Complete
-					</button>
+					</Button>
 				</div>
 			</form>
 		</div>

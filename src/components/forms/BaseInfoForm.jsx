@@ -1,3 +1,12 @@
+import {
+	Select,
+	NumberInput,
+	NumberInputField,
+	NumberInputStepper,
+	NumberIncrementStepper,
+	NumberDecrementStepper,
+} from "@chakra-ui/react";
+
 const date = new Date();
 const currYear = date.getFullYear();
 const years = new Array(currYear - 1900 + 1).fill(1900);
@@ -6,35 +15,43 @@ export default function BaseInfoForm({ inputSt, handleInput }) {
 	return (
 		<>
 			<h2>
-				Please select which sex we should use to calculate your calorie needs.
+				Please select a gender that suits you.
+				<p>We need a sex to calculate the calorie needs of your body.</p>
 			</h2>
-			<div>
-				<input
-					type="radio"
-					id="female"
-					value="female"
-					name="gender"
-					readOnly
-					checked={"female" === inputSt.gender}
-					onClick={handleInput}
-				/>
-				<label htmlFor="female">Female</label>
+			<div className="progress-form-radio-div gender-radio">
+				<div>
+					<input
+						type="radio"
+						id="female"
+						value="female"
+						name="gender"
+						readOnly
+						checked={"female" === inputSt.gender}
+						onClick={handleInput}
+					/>
+					<button type="button">
+						<label htmlFor="female">Female</label>
+					</button>
+				</div>
+				<div>
+					<input
+						type="radio"
+						id="male"
+						value="male"
+						name="gender"
+						readOnly
+						checked={"male" === inputSt.gender}
+						onClick={handleInput}
+					/>
+					<button type="button">
+						<label htmlFor="male">Male</label>
+					</button>
+				</div>
 			</div>
-			<div>
-				<input
-					type="radio"
-					id="male"
-					value="male"
-					name="gender"
-					readOnly
-					checked={"male" === inputSt.gender}
-					onClick={handleInput}
-				/>
-				<label htmlFor="male">Male</label>
-			</div>
-
+			<div className="progress-gap-div"></div>
 			<h2>What is your year of birth?</h2>
-			<select
+			<Select
+				className="my-select"
 				name="yearOfBirth"
 				value={inputSt.yearOfBirth}
 				onChange={handleInput}
@@ -43,27 +60,32 @@ export default function BaseInfoForm({ inputSt, handleInput }) {
 				<option value="">Year of Birth</option>
 				{years.map((_, i) => {
 					return (
-						<option value={currYear - i} key={i}>
+						<option className="my-option" value={currYear - i} key={i}>
 							{currYear - i}
 						</option>
 					);
 				})}
-			</select>
-
-			<h2>How tall are you?</h2>
-			<div>
-				<input
-					type="number"
-					name="height"
-					placeholder="Height"
-					min="0"
-					max="250"
-					step="1"
-					value={inputSt.height}
-					onChange={handleInput}
-				/>
-				<span>cm</span>
-			</div>
+			</Select>
+			<div className="progress-gap-div"></div>
+			<h2>How tall are you? (cm)</h2>
+			<NumberInput
+				className="progress-num-input"
+				step={1}
+				min={10}
+				max={250}
+				value={inputSt.height}
+				onChange={(value) => {
+					const target = { value: value, name: "height" };
+					handleInput({ target: target });
+				}}
+			>
+				<NumberInputField placeholder="Height" />
+				<NumberInputStepper>
+					<NumberIncrementStepper />
+					<span>cm</span>
+					<NumberDecrementStepper />
+				</NumberInputStepper>
+			</NumberInput>
 		</>
 	);
 }
