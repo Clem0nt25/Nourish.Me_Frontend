@@ -85,3 +85,20 @@ export const fetchUserSpecs = async (userId) => {
     throw error;
   }
 };
+
+// delete food from diary
+
+export const deleteFood = async (userId, barcode, mealId, currentDate) => {
+  const foodDetails = {
+    userId,
+    barcode,
+    mealId,
+    currentDate,
+  };
+  console.log("Sending food details to server:", foodDetails);
+  const response = await axios.post(
+    `${import.meta.env.VITE_BASE_API_URL}/api/deleteFood`,
+    foodDetails
+  );
+  console.log("Response from server:", response.data);
+};

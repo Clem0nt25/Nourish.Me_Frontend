@@ -2,15 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import { useLocation } from "react-router-dom";
 
-import {
-  VStack,
-  Box,
-  IconButton,
-  Center,
-  Stack,
-  Badge,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { VStack, Box, IconButton, Center } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
 import { FoodSearchBar } from "../components/DailyDiary/FoodSearchBar";
 import { FoodSearchResults } from "../components/DailyDiary/FoodSearchResults";
@@ -23,6 +15,7 @@ import {
   getFood,
   fetchDiary,
   fetchUserSpecs,
+  deleteFood,
 } from "../services/foodService.js";
 import { delay } from "../utils/delay";
 
@@ -112,6 +105,12 @@ function DailyDiary() {
     searchRef.current = delay(searchFoods, 300);
   };
 
+  const handleDeleteFood = async (userId, barcode, mealId, currentDate) => {
+    await deleteFood(userId, barcode, mealId, currentDate);
+    const updatedDiary = await fetchDiary(currUserSt._id);
+    setDiary(updatedDiary);
+  };
+
   const handleScanBarcode = () => {
     console.log("Barcode scanning not implemented yet");
   };
@@ -147,7 +146,7 @@ function DailyDiary() {
         />
 
         {/* Display diary entries */}
-        <FoodDiary diary={diary} />
+        <FoodDiary diary={diary} onDeleteFood={handleDeleteFood} />
 
         <Center>
           <IconButton

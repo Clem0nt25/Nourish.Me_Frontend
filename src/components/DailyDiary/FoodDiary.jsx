@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Box,
   Flex,
@@ -9,13 +9,16 @@ import {
   IconButton,
   Image,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import foodLogo from "../../assets/food-logo.png";
+import { SessionContext } from "../../contexts/SessionContext";
 
-export const FoodDiary = ({ diary }) => {
+export const FoodDiary = ({ diary, onDeleteFood }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState({});
+  const { currUserSt } = useContext(SessionContext);
+  const userId = currUserSt._id;
 
   const handleToggle = (mealType) => {
     setIsOpen((prevState) => ({
@@ -86,11 +89,22 @@ export const FoodDiary = ({ diary }) => {
                       <Text ml={2} fontWeight="500">
                         {food.foodName}
                       </Text>
-                    </Flex>
-                    <Flex mt={2}>
-                      <Text>{food.amount}g</Text>
                       <Spacer />
-                      <Text>{parseFloat(food.calories).toFixed(1)} kcal</Text>
+                      <IconButton
+                        icon={<DeleteIcon />}
+                        variant="ghost"
+                        bg={"red.400"}
+                        _hover={{ bg: "red.500", color: "white" }}
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent navigate when the delete button is clicked
+                          onDeleteFood(
+                            userId,
+                            food.barcode,
+                            food.mealId,
+                            food.date
+                          );
+                        }}
+                      />
                     </Flex>
                   </Box>
                 ))}
