@@ -16,9 +16,14 @@ import { FoodSearchBar } from "../components/DailyDiary/FoodSearchBar";
 import { FoodSearchResults } from "../components/DailyDiary/FoodSearchResults";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { FoodDiary } from "../components/DailyDiary/FoodDiary";
+import { DailyMacros } from "../components/DailyDiary/DailyMacros";
 import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
-import { getFood, fetchDiary } from "../services/foodService.js";
+import {
+  getFood,
+  fetchDiary,
+  fetchUserSpecs,
+} from "../services/foodService.js";
 import { delay } from "../utils/delay";
 
 function DailyDiary() {
@@ -49,27 +54,22 @@ function DailyDiary() {
     fetchInitialDiary();
   }, []);
 
-  const findUserSpecs = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
-        currUserSt._id
-      }`
-    );
-    if (response.status === 200) {
-      const { data: userSpecs } = await response.json();
-      setUserSpecsSt(userSpecs);
-    } else if (response.status === 404) {
-      //not found means we do not have any the user specs current doc in database
-      //means this is a new user
-      navigate("/progress-questionnaire");
-    }
-  };
+  // function to fetch user specs on page load and re-render
 
   useEffect(() => {
-    if (currUserSt) {
-      findUserSpecs();
-    }
-  }, [currUserSt]);
+    const fetchCurrentUserSpec = async () => {
+      try {
+        console.log("currUserSt._id:", currUserSt._id);
+        const userSpecs = await fetchUserSpecs(currUserSt._id);
+        console.log("User specs fetched in DailyDiary:", userSpecs);
+        setUserSpecsSt(userSpecs);
+      } catch (error) {
+        console.error("Error fetching user specs:", error);
+      }
+    };
+
+    fetchCurrentUserSpec();
+  }, []);
 
   const searchFoods = async (isRetry = false) => {
     setIsLoading(true);
@@ -122,19 +122,13 @@ function DailyDiary() {
     };
   }, []);
 
-  const stackDirection = useBreakpointValue({ base: "column", md: "row" });
-
   return (
     <MainContainer>
       <VStack align="stretch" spacing={4}>
         {/* Display daily macros */}
+
         <Box>
-          <Stack direction={stackDirection} justify="space-between" spacing={4}>
-            <Badge>Calories: 2000/2000 kcal</Badge>
-            <Badge>Protein: 50g</Badge>
-            <Badge>Carbs: 250g</Badge>
-            <Badge>Fat: 50g</Badge>
-          </Stack>
+          <DailyMacros userSpecsSt={userSpecsSt} />
         </Box>
 
         {/* Search bar */}

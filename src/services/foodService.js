@@ -72,3 +72,16 @@ export async function updateAndFetchDiary(barcode, amount, mealType, userId) {
   const diary = await fetchDiary(userId);
   return diary;
 }
+
+// Fetch current user specs from server
+export const fetchUserSpecs = async (userId) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_API_URL}/api/userSpecsHistory/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user specs:", error);
+    throw error;
+  }
+};
