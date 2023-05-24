@@ -13,6 +13,11 @@ export const getFood = async (foodName, cancelToken) => {
       foodName: food.foodName,
       image: food.image,
       barcode: food.barcode,
+      calories: food.calories,
+      protein: food.protein,
+      fiber: food.fiber,
+      carbs: food.carbs,
+      fat: food.fat,
     }));
 
     return foods;

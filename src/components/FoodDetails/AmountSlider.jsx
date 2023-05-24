@@ -6,19 +6,12 @@ import {
   Box,
 } from "@chakra-ui/react";
 
-function AmountSlider({
-  amount,
-  setAmount,
-  inputAmount,
-  setInputAmount,
-  min,
-  max,
-}) {
+function AmountSlider({ amount, setAmount, setInputAmount, min, max }) {
   return (
     <Slider
       min={min}
       max={max}
-      step={10}
+      step={5}
       value={amount}
       onChange={(value) => {
         setAmount(value);
