@@ -13,6 +13,11 @@ export const getFood = async (foodName, cancelToken) => {
       foodName: food.foodName,
       image: food.image,
       barcode: food.barcode,
+      calories: food.calories,
+      protein: food.protein,
+      fiber: food.fiber,
+      carbs: food.carbs,
+      fat: food.fat,
     }));
 
     return foods;
@@ -39,10 +44,15 @@ export const updateFoodDetails = async (barcode, amount, mealType, userId) => {
 
   console.log("Sending food details to server:", foodDetails);
 
-  await axios.post(
+  const response = await axios.post(
     `${import.meta.env.VITE_BASE_API_URL}/api/getFoodByBarcode`,
     foodDetails
   );
+
+  // Log the response from the backend
+  console.log("Response from server:", response.data);
+
+  // console.log("Full response:", response);
 };
 
 // Fetch Diary from server
