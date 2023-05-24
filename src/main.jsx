@@ -6,16 +6,13 @@ import { BrowserRouter } from "react-router-dom";
 import SessionContextProvider from "./contexts/SessionContext.jsx";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme/theme";
-import { FoodProvider } from "./contexts/FoodContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <SessionContextProvider>
-          <FoodProvider>
-            <App />
-          </FoodProvider>
+          <App />
         </SessionContextProvider>
       </BrowserRouter>
     </ChakraProvider>

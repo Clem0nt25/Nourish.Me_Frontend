@@ -9,6 +9,7 @@ import GramInput from "../components/FoodDetails/GramInput";
 import AmountSlider from "../components/FoodDetails/AmountSlider";
 import MealTypeSelect from "../components/FoodDetails/MealTypeSelect";
 import { updateAndFetchDiary, getFood } from "../services/foodService.js";
+import NutritionInfo from "../components/FoodDetails/NutritionInfo";
 
 function FoodDetails() {
   const { barcode } = useParams();
@@ -74,6 +75,7 @@ function FoodDetails() {
           {selectedFood.foodName}
         </Text>
         <FoodImage src={selectedFood.image} alt={selectedFood.foodName} />
+        <NutritionInfo food={selectedFood} />
         <GramInput
           min={min}
           max={max}
