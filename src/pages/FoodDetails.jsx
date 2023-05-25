@@ -17,109 +17,86 @@ function FoodDetails() {
   const location = useLocation();
   const getFood = useGetFood();
   const updateAndFetchDiary = useUpdateAndFetchDiary();
-  const initialFood = {
-    foodName: "",
-    image: "",
-    barcode: "",
-    calories: 0,
-    protein: 0,
-    fiber: 0,
-    carbs: 0,
-    fat: 0,
-  };
-  const [selectedFood, setSelectedFood] = useState(
-    location.state?.selectedFood || initialFood
-  );
-  const [amount, setAmount] = useState(selectedFood.amount || 100);
-  const [inputAmount, setInputAmount] = useState(selectedFood.amount || 100);
-  const [mealType, setMealType] = useState("breakfast");
-  const [adjustedFood, setAdjustedFood] = useState({});
 
-  console.log("FoodDetails: selectedFood=", selectedFood);
+  const [amount, setAmount] = useState(100);
+  const [mealType, setMealType] = useState("breakfast");
+  const [foodData, setFoodData] = useState(null);
 
   const navigate = useNavigate();
 
-  const min = 0;
-  const max = 5000;
-
   useEffect(() => {
-    if (!selectedFood.foodName) {
-      // if no food is passed, fetch it from the server
-      getFood(barcode)
-        .then((foods) => {
-          // Set the original nutritional values to selectedFood state
-          setSelectedFood(foods[0]);
-          // Initialize the adjusted food to match the original values
-          setAdjustedFood(foods[0]);
-        })
-        .catch(console.error);
+    async function fetchFood() {
+      try {
+        const foods = await getFood(barcode);
+        setFoodData({
+          original: foods[0],
+          adjusted: adjustFoodValues(foods[0], amount),
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }, [barcode]);
 
-  useEffect(() => {
-    // Adjust the nutritional values whenever amount changes
-    setAdjustedFood({
-      calories: (selectedFood.calories * amount) / 100,
-      protein: (selectedFood.protein * amount) / 100,
-      fiber: (selectedFood.fiber * amount) / 100,
-      carbs: (selectedFood.carbs * amount) / 100,
-      fat: (selectedFood.fat * amount) / 100,
-    });
-  }, [amount, selectedFood]);
-
-  const handleUnitsBlur = () => {
-    const value = Number(inputAmount);
-    if (!isNaN(value)) {
-      setAmount(value);
+    if (location.state?.selectedFood) {
+      setFoodData({
+        original: location.state.selectedFood,
+        adjusted: adjustFoodValues(location.state.selectedFood, amount),
+      });
+    } else {
+      fetchFood();
     }
-  };
+  }, [barcode, location.state?.selectedFood, amount]);
+
+  function adjustFoodValues(food, amount) {
+    return {
+      calories: (food.calories * amount) / 100,
+      protein: (food.protein * amount) / 100,
+      fiber: (food.fiber * amount) / 100,
+      carbs: (food.carbs * amount) / 100,
+      fat: (food.fat * amount) / 100,
+    };
+  }
+
   const handleSave = async () => {
     try {
-      console.log(
-        "Saving food details: barcode=",
-        barcode,
-        ", amount=",
-        amount,
-        ", mealType=",
-        mealType,
-        ", userId=",
-        currUserSt._id
-      );
       const newDiary = await updateAndFetchDiary(
         barcode,
         amount,
         mealType,
         currUserSt._id
       );
-      console.log("New diary data in FoodDetails:", newDiary);
       navigate("/daily-diary", { state: { newDiary } });
     } catch (error) {
       console.error("Error in FoodDetails handleSave:", error);
     }
   };
 
+  if (!foodData) return null; // or a loading indicator
+
   return (
     <MainContainer>
       <VStack>
         <Text fontSize="xl" fontWeight="bold">
-          {selectedFood.foodName}
+          {foodData.original.foodName}
         </Text>
-        <FoodImage src={selectedFood.image} alt={selectedFood.foodName} />
-        <NutritionInfo adjustedFood={adjustedFood} />
+        <FoodImage
+          src={foodData.original.image}
+          alt={foodData.original.foodName}
+        />
+        <NutritionInfo adjustedFood={foodData.adjusted} />
         <GramInput
-          min={min}
-          max={max}
-          value={inputAmount}
-          onChange={(valueString) => setInputAmount(valueString)}
-          onBlur={handleUnitsBlur}
+          min={0}
+          max={5000}
+          value={amount}
+          onChange={(valueString) => setAmount(Number(valueString))}
         />
         <AmountSlider
           amount={amount}
           setAmount={setAmount}
-          inputAmount={inputAmount}
-          setInputAmount={setInputAmount}
-          min={min}
-          max={max}
+          inputAmount={amount}
+          setInputAmount={setAmount}
+          min={0}
+          max={300}
         />
         <MealTypeSelect mealType={mealType} setMealType={setMealType} />
         <Button onClick={handleSave} variant="button-primary">
