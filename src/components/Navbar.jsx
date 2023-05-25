@@ -25,7 +25,7 @@ function Navbar() {
   return (
     <Flex
       as="nav"
-      bg="linear-gradient(to right, #34eb64, #98FB98)"
+      bg=" #98FB98"
       color="#292F36"
       align="center"
       p={4}
@@ -50,7 +50,7 @@ function Navbar() {
               <Link to="/daily-diary">
                 <Button
                   variant="button-primary"
-                  bg="linear-gradient(to right, #FF9400, #FFD700)"
+                  bg="#FF9400"
                   color="white"
                   _hover={{ color: "#292F36", bgColor: "white" }}
                   mr={4}
@@ -63,7 +63,7 @@ function Navbar() {
               <Link to="/profile">
                 <Button
                   variant="button-primary"
-                  bg="linear-gradient(to right, #FF9400, #FFD700)"
+                  bg="#FF9400"
                   color="white"
                   _hover={{ color: "#292F36", bgColor: "white" }}
                   mr={4}
@@ -75,7 +75,7 @@ function Navbar() {
               </Link>
               <Button
                 variant="button-primary"
-                bg="linear-gradient(to right, #FF9400, #FFD700)"
+                bg="#FF9400"
                 color="white"
                 _hover={{ color: "#292F36", bgColor: "white" }}
                 onClick={logout}
@@ -89,7 +89,7 @@ function Navbar() {
             <Link to="/login">
               <Button
                 variant="button-primary"
-                bg="linear-gradient(to right, #FF9400, #FFD700)"
+                bg="#FF9400"
                 color="white"
                 _hover={{ color: "#292F36", bgColor: "white" }}
                 leftIcon={<RiLoginBoxLine />}

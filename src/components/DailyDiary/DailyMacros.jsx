@@ -10,7 +10,6 @@ import {
 import { If, Else, Then } from "react-if";
 
 export const DailyMacros = ({ userSpecsSt }) => {
-  // Ensure values are not undefined
   const currentCalories = userSpecsSt?.data?.currentCalories || 0;
   const goalCalories = userSpecsSt?.data?.goalCalories || 0;
 
