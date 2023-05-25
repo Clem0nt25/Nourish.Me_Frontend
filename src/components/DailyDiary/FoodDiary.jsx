@@ -84,16 +84,18 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
                       console.log("Clicked food in diary", food);
                     }}
                   >
-                    <Flex align="center">
+                    <Flex align="start">
                       <Image src={foodLogo} alt="Food Logo" boxSize={6} />
-                      <Text ml={2} fontWeight="500">
-                        {food.foodName}
-                      </Text>
-                      <Spacer />
-                      <Text>{food.amount}g</Text>
-                      <Spacer />
-                      <Text>{parseFloat(food.calories).toFixed(1)} kcal</Text>
-
+                      <VStack align="start" ml={2} spacing={0}>
+                        <Text fontWeight="500">{food.foodName}</Text>
+                        <Flex>
+                          <Text>{food.amount}g</Text>
+                          <Spacer />
+                          <Text>
+                            {parseFloat(food.calories).toFixed(1)} kcal
+                          </Text>
+                        </Flex>
+                      </VStack>
                       <Spacer />
                       <IconButton
                         icon={<DeleteIcon />}
