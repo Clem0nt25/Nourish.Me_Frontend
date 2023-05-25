@@ -102,7 +102,7 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
                         bg={"red.400"}
                         _hover={{ bg: "red.500", color: "white" }}
                         onClick={(e) => {
-                          e.stopPropagation(); // prevent navigate when the delete button is clicked
+                          e.stopPropagation();
                           onDeleteFood(
                             userId,
                             food.barcode,

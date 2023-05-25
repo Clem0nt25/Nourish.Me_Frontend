@@ -29,7 +29,6 @@ function Homepage() {
     "#e0fee0",
   ];
 
-  // Animate the text on component mount
   useEffect(() => {
     const animateText = async () => {
       await controls.start({
@@ -40,7 +39,6 @@ function Homepage() {
     animateText();
   }, [controls]);
 
-  // Change the color every 200ms
   useEffect(() => {
     const colorInterval = setInterval(() => {
       if (isIncrementing) {
@@ -58,7 +56,7 @@ function Homepage() {
       }
     }, 200);
 
-    return () => clearInterval(colorInterval); // clean up on component unmount
+    return () => clearInterval(colorInterval);
   }, [colorIndex, isIncrementing]);
 
   if (isLoggedInSt) {

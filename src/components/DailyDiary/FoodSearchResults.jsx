@@ -25,7 +25,7 @@ export const FoodSearchResults = ({ results, handleFoodSelect }) => {
             p={2}
             cursor="pointer"
             bg={index % 2 === 0 ? "#f8f8f8" : "white"}
-            _hover={{ bg: "lightgray" }} // Hover effect
+            _hover={{ bg: "lightgray" }}
           >
             <Text fontWeight="bold">{capitalizeWords(food.foodName)}</Text>
           </Box>

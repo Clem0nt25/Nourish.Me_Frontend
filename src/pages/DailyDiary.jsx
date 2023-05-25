@@ -123,7 +123,6 @@ function DailyDiary() {
     await deleteFood(userId, barcode, mealId, currentDate);
     const updatedDiary = await fetchDiary(currUserSt._id);
     setDiary(updatedDiary);
-    // fetch updated user specs
     const updatedUserSpecs = await fetchUserSpecs(userId);
     setUserSpecsSt(updatedUserSpecs);
   };
@@ -152,8 +151,6 @@ function DailyDiary() {
           <Heading mb={1}>{currentDay}</Heading>
         </Center>
 
-        {/* Display daily macros */}
-
         <Box>
           <DailyMacros userSpecsSt={userSpecsSt} />
         </Box>
@@ -164,16 +161,13 @@ function DailyDiary() {
           handleInputChange={handleInputChange}
         />
 
-        {/* Display loading state */}
         <LoadingIndicator isLoading={isLoading} />
 
-        {/* Display search results */}
         <FoodSearchResults
           results={results}
           handleFoodSelect={handleFoodSelect}
         />
 
-        {/* Display diary entries */}
         <FoodDiary diary={diary} onDeleteFood={handleDeleteFood} />
 
         {/* <Center>
