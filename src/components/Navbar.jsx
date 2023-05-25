@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SessionContext } from "../contexts/SessionContext";
 import { Box, Button, Flex, Image, Link as ChakraLink } from "@chakra-ui/react";
+import logo from "../assets/clock-logo.png";
 
 function Navbar() {
 	const location = useLocation();
@@ -21,6 +22,7 @@ function Navbar() {
 				<Image
 					className="logo"
 					//temporary logo placeholder
+					// change src to clock-logo.png in assets folder
 					src="https://w7.pngwing.com/pngs/309/348/png-transparent-diane-s-365-nutrition-logo-design.png"
 					alt="logo"
 					width={50}
