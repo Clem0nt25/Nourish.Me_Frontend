@@ -1,6 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
 
 function NutritionInfo({ adjustedFood }) {
+  console.log(adjustedFood);
   return (
     <Box w="100%" p={4} color="white" bg="white" rounded="md">
       <Text fontWeight="bold">Nutritional Information:</Text>
