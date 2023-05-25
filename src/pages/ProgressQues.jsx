@@ -11,191 +11,197 @@ import caculateUserSpecs from "../components/forms/caculateUserSpecs";
 import { Button } from "@chakra-ui/react";
 
 function ProgressQues() {
-	const [stepSt, setStepSt] = useState(0);
-	const [inputSt, setInputSt] = useState({
-		username: "",
-		mainGoal: "",
-		activityLevel: "",
-		gender: "",
-		yearOfBirth: "",
-		height: "",
-		currentWeight: "",
-		goalWeightChange: "",
-		weightChangePerWeek: "",
-	});
+  const [stepSt, setStepSt] = useState(0);
+  const [inputSt, setInputSt] = useState({
+    username: "",
+    mainGoal: "",
+    activityLevel: "",
+    gender: "",
+    yearOfBirth: "",
+    height: "",
+    currentWeight: "",
+    goalWeightChange: "",
+    weightChangePerWeek: "",
+  });
 
-	const [ifFilledSt, setIfFilledSt] = useState([]);
+  const [ifFilledSt, setIfFilledSt] = useState([]);
 
-	const { currUserSt } = useContext(SessionContext);
+  const { currUserSt, tokenSt } = useContext(SessionContext);
 
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	const handleInput = (e) => {
-		setInputSt({ ...inputSt, [e.target.name]: e.target.value });
-		// console.log(e.target.name, e.target.value);
-	};
+  const handleInput = (e) => {
+    setInputSt({ ...inputSt, [e.target.name]: e.target.value });
+    // console.log(e.target.name, e.target.value);
+  };
 
-	const checkPotential = async () => {
-		try {
-			const potentialRes = await fetch(
-				`${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
-					currUserSt._id
-				}`
-			);
-			if (potentialRes.status === 200) {
-				navigate("/daily-diary");
-			}
-		} catch (error) {
-			console(error);
-		}
-	};
+  const checkPotential = async () => {
+    try {
+      const potentialRes = await fetch(
+        `${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
+          currUserSt._id
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${tokenSt}`,
+          },
+        }
+      );
+      if (potentialRes.status === 200) {
+        navigate("/daily-diary");
+      }
+    } catch (error) {
+      console(error);
+    }
+  };
 
-	useEffect(() => {
-		checkPotential();
-	}, []);
+  useEffect(() => {
+    checkPotential();
+  }, []);
 
-	//set the boolean array to check if the current form is filled, if not - disable the next button
-	useEffect(() => {
-		const ifFilled = [];
-		if (inputSt.username) ifFilled[0] = true;
-		if (inputSt.mainGoal) ifFilled[1] = true;
-		if (inputSt.activityLevel) ifFilled[2] = true;
-		if (inputSt.gender && inputSt.yearOfBirth && inputSt.height)
-			ifFilled[3] = true;
-		if (inputSt.currentWeight && inputSt.weightChangePerWeek)
-			ifFilled[4] = true;
+  //set the boolean array to check if the current form is filled, if not - disable the next button
+  useEffect(() => {
+    const ifFilled = [];
+    if (inputSt.username) ifFilled[0] = true;
+    if (inputSt.mainGoal) ifFilled[1] = true;
+    if (inputSt.activityLevel) ifFilled[2] = true;
+    if (inputSt.gender && inputSt.yearOfBirth && inputSt.height)
+      ifFilled[3] = true;
+    if (inputSt.currentWeight && inputSt.weightChangePerWeek)
+      ifFilled[4] = true;
 
-		setIfFilledSt(ifFilled);
-	}, [inputSt]);
+    setIfFilledSt(ifFilled);
+  }, [inputSt]);
 
-	//works with the previous function to handle the case that the user does not want weight change,
-	//then fill the input feilds to pass the check to activate "next" button
-	const setWeightPlan = (ifNeedPlan) => {
-		if (ifNeedPlan && inputSt.weightChangePerWeek === "skip") {
-			setInputSt({ ...inputSt, goalWeightChange: "", weightChangePerWeek: "" });
-		} else if (!ifNeedPlan) {
-			setInputSt({
-				...inputSt,
-				goalWeightChange: 0,
-				weightChangePerWeek: "skip",
-			});
-		}
-	};
+  //works with the previous function to handle the case that the user does not want weight change,
+  //then fill the input feilds to pass the check to activate "next" button
+  const setWeightPlan = (ifNeedPlan) => {
+    if (ifNeedPlan && inputSt.weightChangePerWeek === "skip") {
+      setInputSt({ ...inputSt, goalWeightChange: "", weightChangePerWeek: "" });
+    } else if (!ifNeedPlan) {
+      setInputSt({
+        ...inputSt,
+        goalWeightChange: 0,
+        weightChangePerWeek: "skip",
+      });
+    }
+  };
 
-	const displayByStep = () => {
-		let display;
-		switch (stepSt) {
-			case 0:
-				display = <NameForm inputSt={inputSt} handleInput={handleInput} />;
-				break;
-			case 1:
-				display = <GoalForm inputSt={inputSt} handleInput={handleInput} />;
-				break;
-			case 2:
-				display = (
-					<ActivityLevelForm inputSt={inputSt} handleInput={handleInput} />
-				);
-				break;
-			case 3:
-				display = <BaseInfoForm inputSt={inputSt} handleInput={handleInput} />;
-				break;
-			case 4:
-				display = (
-					<WeightForm
-						inputSt={inputSt}
-						handleInput={handleInput}
-						setWeightPlan={setWeightPlan}
-					/>
-				);
-				break;
-			case 5:
-				display = <FinalText inputSt={inputSt} />;
-				break;
-			default:
-				display = <h2>Error</h2>;
-		}
-		return display;
-	};
+  const displayByStep = () => {
+    let display;
+    switch (stepSt) {
+      case 0:
+        display = <NameForm inputSt={inputSt} handleInput={handleInput} />;
+        break;
+      case 1:
+        display = <GoalForm inputSt={inputSt} handleInput={handleInput} />;
+        break;
+      case 2:
+        display = (
+          <ActivityLevelForm inputSt={inputSt} handleInput={handleInput} />
+        );
+        break;
+      case 3:
+        display = <BaseInfoForm inputSt={inputSt} handleInput={handleInput} />;
+        break;
+      case 4:
+        display = (
+          <WeightForm
+            inputSt={inputSt}
+            handleInput={handleInput}
+            setWeightPlan={setWeightPlan}
+          />
+        );
+        break;
+      case 5:
+        display = <FinalText inputSt={inputSt} />;
+        break;
+      default:
+        display = <h2>Error</h2>;
+    }
+    return display;
+  };
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-		// caculate all other user specs
-		const payload = caculateUserSpecs(inputSt, currUserSt._id);
+    // caculate all other user specs
+    const payload = caculateUserSpecs(inputSt, currUserSt._id);
 
-		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_BASE_API_URL}/api/createUserSpecsCurrent/${
-					currUserSt._id
-				}`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(payload),
-				}
-			);
-			if (response.status === 201) {
-				navigate("/daily-diary");
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	};
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_API_URL}/api/createUserSpecsCurrent/${
+          currUserSt._id
+        }`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenSt}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (response.status === 201) {
+        navigate("/daily-diary");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-	const barLengthCss =
-		Math.round((1 / 6) * (stepSt + 1) * 100).toString() + "%";
+  const barLengthCss =
+    Math.round((1 / 6) * (stepSt + 1) * 100).toString() + "%";
 
-	return (
-		<div className="progress-ques-page">
-			<div className="progressbar">
-				<div style={{ width: barLengthCss }}></div>
-			</div>
-			<form onSubmit={handleSubmit}>
-				<div className="progress-input-div">{displayByStep()}</div>
-				<div className="progress-ques-btn-div">
-					<Button
-						className="progress-btn"
-						type="button"
-						hidden={stepSt === 0 ? true : false}
-						colorScheme="green"
-						variant="outline"
-						onClick={() => {
-							if (stepSt > 0) {
-								setStepSt((preStep) => preStep - 1);
-							}
-						}}
-					>
-						Back
-					</Button>
-					<Button
-						className="progress-btn"
-						type="button"
-						isDisabled={!ifFilledSt[stepSt]}
-						hidden={stepSt < 5 ? false : true}
-						colorScheme="green"
-						variant="solid"
-						onClick={() => {
-							if (stepSt < 5) {
-								setStepSt((preStep) => preStep + 1);
-							}
-						}}
-					>
-						Next
-					</Button>
-					<Button
-						type="submit"
-						hidden={stepSt === 5 ? false : true}
-						colorScheme="green"
-						variant="solid"
-					>
-						Complete
-					</Button>
-				</div>
-			</form>
-		</div>
-	);
+  return (
+    <div className="progress-ques-page">
+      <div className="progressbar">
+        <div style={{ width: barLengthCss }}></div>
+      </div>
+      <form onSubmit={handleSubmit}>
+        <div className="progress-input-div">{displayByStep()}</div>
+        <div className="progress-ques-btn-div">
+          <Button
+            className="progress-btn"
+            type="button"
+            hidden={stepSt === 0 ? true : false}
+            colorScheme="green"
+            variant="outline"
+            onClick={() => {
+              if (stepSt > 0) {
+                setStepSt((preStep) => preStep - 1);
+              }
+            }}
+          >
+            Back
+          </Button>
+          <Button
+            className="progress-btn"
+            type="button"
+            isDisabled={!ifFilledSt[stepSt]}
+            hidden={stepSt < 5 ? false : true}
+            colorScheme="green"
+            variant="solid"
+            onClick={() => {
+              if (stepSt < 5) {
+                setStepSt((preStep) => preStep + 1);
+              }
+            }}
+          >
+            Next
+          </Button>
+          <Button
+            type="submit"
+            hidden={stepSt === 5 ? false : true}
+            colorScheme="green"
+            variant="solid"
+          >
+            Complete
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 export default ProgressQues;

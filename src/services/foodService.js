@@ -43,74 +43,112 @@ export const useGetFood = () => {
 };
 
 // Update food details in server
-export const updateFoodDetails = async (barcode, amount, mealType, userId) => {
+export const useUpdateFoodDetails = () => {
+  const { tokenSt } = useContext(SessionContext);
   const currentDate = new Date().toISOString().slice(0, 10);
 
-  const foodDetails = {
-    barcode,
-    currentDate,
-    amount,
-    mealType,
-    userId,
+  const updateFoodDetails = async (barcode, amount, mealType, userId) => {
+    const foodDetails = {
+      barcode,
+      currentDate,
+      amount,
+      mealType,
+      userId,
+    };
+
+    console.log("Sending food details to server:", foodDetails);
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_API_URL}/api/getFoodByBarcode`,
+      foodDetails,
+      {
+        headers: {
+          Authorization: `Bearer ${tokenSt}`,
+        },
+      }
+    );
+
+    console.log("Response from server:", response.data);
+    // console.log("Full response:", response);
   };
 
-  console.log("Sending food details to server:", foodDetails);
-
-  const response = await axios.post(
-    `${import.meta.env.VITE_BASE_API_URL}/api/getFoodByBarcode`,
-    foodDetails
-  );
-
-  // Log the response from the backend
-  console.log("Response from server:", response.data);
-
-  // console.log("Full response:", response);
+  return updateFoodDetails;
 };
 
 // Fetch Diary from server
-export const fetchDiary = async (userId) => {
+export const useFetchDiary = () => {
+  const { tokenSt } = useContext(SessionContext);
   const currentDate = new Date().toISOString().slice(0, 10);
 
-  const response = await axios.get(
-    `${import.meta.env.VITE_BASE_API_URL}/api/getUserDiary`,
-    { params: { userId, date: currentDate } }
-  );
+  const fetchDiary = async (userId) => {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_API_URL}/api/getUserDiary`,
+      {
+        params: { userId, date: currentDate },
+        headers: {
+          Authorization: `Bearer ${tokenSt}`,
+        },
+      }
+    );
 
-  return response.data;
+    return response.data;
+  };
+  return fetchDiary;
 };
 
-export async function updateAndFetchDiary(barcode, amount, mealType, userId) {
-  await updateFoodDetails(barcode, amount, mealType, userId);
-  const diary = await fetchDiary(userId);
-  return diary;
-}
+export const useUpdateAndFetchDiary = () => {
+  const updateFoodDetails = useUpdateFoodDetails();
+  const fetchDiary = useFetchDiary();
+
+  const updateAndFetchDiary = async (barcode, amount, mealType, userId) => {
+    await updateFoodDetails(barcode, amount, mealType, userId);
+    const diary = await fetchDiary(userId);
+    return diary;
+  };
+
+  return updateAndFetchDiary;
+};
 
 // Fetch current user specs from server
-export const fetchUserSpecs = async (userId) => {
-  try {
+export const useFetchUserSpecs = () => {
+  const { tokenSt } = useContext(SessionContext);
+
+  const fetchUserSpecs = async (userId) => {
     const response = await axios.get(
-      `${import.meta.env.VITE_BASE_API_URL}/api/userSpecsHistory/${userId}`
+      `${import.meta.env.VITE_BASE_API_URL}/api/userSpecsHistory/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${tokenSt}`,
+        },
+      }
     );
     return response.data;
-  } catch (error) {
-    console.error("Error fetching user specs:", error);
-    throw error;
-  }
+  };
+
+  return fetchUserSpecs;
 };
 
 // delete food from diary
-
-export const deleteFood = async (userId, barcode, mealId, currentDate) => {
-  const foodDetails = {
-    userId,
-    barcode,
-    mealId,
-    currentDate,
+export const useDeleteFood = () => {
+  const { tokenSt } = useContext(SessionContext);
+  const deleteFood = async (userId, barcode, mealId, currentDate) => {
+    const foodDetails = {
+      userId,
+      barcode,
+      mealId,
+      currentDate,
+    };
+    console.log("Sending food details to server:", foodDetails);
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_API_URL}/api/deleteFood`,
+      foodDetails,
+      {
+        headers: {
+          Authorization: `Bearer ${tokenSt}`,
+        },
+      }
+    );
+    console.log("Response from server:", response.data);
   };
-  console.log("Sending food details to server:", foodDetails);
-  const response = await axios.post(
-    `${import.meta.env.VITE_BASE_API_URL}/api/deleteFood`,
-    foodDetails
-  );
-  console.log("Response from server:", response.data);
+  return deleteFood;
 };

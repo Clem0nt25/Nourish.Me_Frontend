@@ -13,9 +13,9 @@ import { DailyMacros } from "../components/DailyDiary/DailyMacros";
 import { useNavigate } from "react-router-dom";
 import {
   useGetFood,
-  fetchDiary,
-  fetchUserSpecs,
-  deleteFood,
+  useFetchDiary,
+  useFetchUserSpecs,
+  useDeleteFood,
 } from "../services/foodService.js";
 import { delay } from "../utils/delay";
 
@@ -37,6 +37,9 @@ function DailyDiary() {
   const navigate = useNavigate();
   const location = useLocation();
   const getFood = useGetFood();
+  const fetchDiary = useFetchDiary();
+  const fetchUserSpecs = useFetchUserSpecs();
+  const deleteFood = useDeleteFood();
 
   useEffect(() => {
     const fetchInitialDiary = async () => {
@@ -109,6 +112,9 @@ function DailyDiary() {
     await deleteFood(userId, barcode, mealId, currentDate);
     const updatedDiary = await fetchDiary(currUserSt._id);
     setDiary(updatedDiary);
+    // fetch updated user specs
+    const updatedUserSpecs = await fetchUserSpecs(userId);
+    setUserSpecsSt(updatedUserSpecs);
   };
 
   // const handleScanBarcode = () => {
