@@ -2,7 +2,14 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import { useLocation } from "react-router-dom";
 
-import { VStack, Box, IconButton, Center } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  IconButton,
+  Center,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
 import { FoodSearchBar } from "../components/DailyDiary/FoodSearchBar";
 import { FoodSearchResults } from "../components/DailyDiary/FoodSearchResults";
@@ -31,6 +38,7 @@ function DailyDiary() {
     snack: [],
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [currentDay, setCurrentDay] = useState("");
 
   const searchRef = useRef(null);
   const navigate = useNavigate();
@@ -121,9 +129,20 @@ function DailyDiary() {
     };
   }, []);
 
+  useEffect(() => {
+    const currentDate = new Date();
+    const options = { weekday: "long" };
+    const currentDayOfWeek = currentDate.toLocaleDateString("en-US", options);
+    setCurrentDay(currentDayOfWeek);
+  }, []);
+
   return (
     <MainContainer>
       <VStack align="stretch" spacing={4}>
+        <Center>
+          <Heading mb={1}>{currentDay}</Heading>
+        </Center>
+
         {/* Display daily macros */}
 
         <Box>

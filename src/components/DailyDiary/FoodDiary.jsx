@@ -90,6 +90,11 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
                         {food.foodName}
                       </Text>
                       <Spacer />
+                      <Text>{food.amount}g</Text>
+                      <Spacer />
+                      <Text>{parseFloat(food.calories).toFixed(1)} kcal</Text>
+
+                      <Spacer />
                       <IconButton
                         icon={<DeleteIcon />}
                         variant="ghost"

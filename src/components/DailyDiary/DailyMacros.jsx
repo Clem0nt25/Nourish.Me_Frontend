@@ -2,10 +2,12 @@ import {
   CircularProgress,
   CircularProgressLabel,
   VStack,
-  Box,
   Text,
   Flex,
+  useBreakpointValue,
 } from "@chakra-ui/react";
+
+import { If, Else, Then } from "react-if";
 
 export const DailyMacros = ({ userSpecsSt }) => {
   // Ensure values are not undefined
@@ -29,92 +31,133 @@ export const DailyMacros = ({ userSpecsSt }) => {
     return current > goal ? "red" : "#6ab06a";
   };
 
+  const CircularProgressBar = ({ color, current, goal }) => (
+    <CircularProgress
+      value={getValue(current, goal).toFixed(1)}
+      color={color}
+      size={70}
+    >
+      <CircularProgressLabel
+        color={getColor(current, goal)}
+        fontSize={21}
+        fontWeight={700}
+      >
+        {getValue(current, goal).toFixed(0)}%
+      </CircularProgressLabel>
+    </CircularProgress>
+  );
+
+  const ProgressBar = ({ color, title, current, goal, units }) => (
+    <VStack
+      w={{ base: "100%", sm: "45%", xl: "22%" }}
+      m={{ base: "2", sm: "2", xl: "2" }}
+    >
+      <Text fontWeight="bold" color={color}>
+        {title}
+      </Text>
+      <CircularProgressBar color={color} current={current} goal={goal} />
+      <Text fontWeight="bold" color={color}>
+        {current} / {goal}
+        {units}
+      </Text>
+    </VStack>
+  );
+
+  const MobileProgressBar = ({ color, title, current, goal, units }) => (
+    <Flex
+      w="100%"
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+      mb="2"
+    >
+      <CircularProgressBar color={color} current={current} goal={goal} />
+      <VStack w="65%">
+        <Text fontWeight="bold" color={color}>
+          {title}
+        </Text>
+        <Text fontWeight="bold" color={color}>
+          {current} / {goal}
+          {units}
+        </Text>
+      </VStack>
+    </Flex>
+  );
+
+  const isMobileLayout = useBreakpointValue({ base: true, sm: false });
+
   return (
-    <Flex justify="space-around" wrap="wrap">
-      <VStack>
-        <Text fontWeight="bold" color="green.400">
-          Calories
-        </Text>
-        <CircularProgress
-          value={getValue(currentCalories, goalCalories).toFixed(1)}
-          color="green.400"
-          size={100}
-        >
-          <CircularProgressLabel
-            color={getColor(currentCalories, goalCalories)}
-            fontSize={23}
-            fontWeight={700}
-          >
-            {getValue(currentCalories, goalCalories).toFixed(0)}%
-          </CircularProgressLabel>
-        </CircularProgress>
-        <Text fontWeight="bold" color="green.400">
-          {currentCalories} / {goalCalories}kcal
-        </Text>
-      </VStack>
-      <VStack>
-        <Text fontWeight="bold" color="blue.400">
-          Protein
-        </Text>
-        <CircularProgress
-          value={getValue(currentProtein, goalProtein).toFixed(1)}
-          color="blue.400"
-          size={100}
-        >
-          <CircularProgressLabel
-            color={getColor(currentProtein, goalProtein)}
-            fontSize={23}
-            fontWeight={700}
-          >
-            {getValue(currentProtein, goalProtein).toFixed(0)}%
-          </CircularProgressLabel>
-        </CircularProgress>
-        <Text fontWeight="bold" color="blue.400">
-          {currentProtein} / {goalProtein}g
-        </Text>
-      </VStack>
-      <VStack>
-        <Text fontWeight="bold" color="orange.400">
-          Carbs
-        </Text>
-        <CircularProgress
-          value={getValue(currentCarbs, goalCarbs).toFixed(1)}
-          color="orange.400"
-          size={100}
-        >
-          <CircularProgressLabel
-            color={getColor(currentCarbs, goalCarbs)}
-            fontSize={23}
-            fontWeight={700}
-          >
-            {getValue(currentCarbs, goalCarbs).toFixed(0)}%
-          </CircularProgressLabel>
-        </CircularProgress>
-        <Text fontWeight="bold" color="orange.400">
-          {currentCarbs} / {goalCarbs}g
-        </Text>
-      </VStack>
-      <VStack>
-        <Text fontWeight="bold" color="red.400">
-          Fat
-        </Text>
-        <CircularProgress
-          value={getValue(currentFat, goalFat).toFixed(1)}
-          color="red.400"
-          size={100}
-          fontWeight={700}
-        >
-          <CircularProgressLabel
-            color={getColor(currentFat, goalFat)}
-            fontSize={23}
-          >
-            {getValue(currentFat, goalFat).toFixed(0)}%
-          </CircularProgressLabel>
-        </CircularProgress>
-        <Text fontWeight="bold" color="red.400">
-          {currentFat} / {goalFat}g
-        </Text>
-      </VStack>
+    <Flex
+      direction={{ base: "column", sm: "row" }}
+      flexWrap={{ base: "nowrap", sm: "wrap" }}
+      justify="center"
+      bg="white"
+      borderRadius={8}
+      border="1px solid lightgrey"
+      padding={4}
+    >
+      <If condition={isMobileLayout}>
+        <Then>
+          <MobileProgressBar
+            color="green.400"
+            title="Calories"
+            current={currentCalories}
+            goal={goalCalories}
+            units="kcal"
+          />
+          <MobileProgressBar
+            color="blue.400"
+            title="Protein"
+            current={currentProtein}
+            goal={goalProtein}
+            units="g"
+          />
+          <MobileProgressBar
+            color="orange.400"
+            title="Carbs"
+            current={currentCarbs}
+            goal={goalCarbs}
+            units="g"
+          />
+          <MobileProgressBar
+            color="red.400"
+            title="Fat"
+            current={currentFat}
+            goal={goalFat}
+            units="g"
+          />
+        </Then>
+        <Else>
+          <ProgressBar
+            color="green.400"
+            title="Calories"
+            current={currentCalories}
+            goal={goalCalories}
+            units="kcal"
+          />
+          <ProgressBar
+            color="blue.400"
+            title="Protein"
+            current={currentProtein}
+            goal={goalProtein}
+            units="g"
+          />
+          <ProgressBar
+            color="orange.400"
+            title="Carbs"
+            current={currentCarbs}
+            goal={goalCarbs}
+            units="g"
+          />
+          <ProgressBar
+            color="red.400"
+            title="Fat"
+            current={currentFat}
+            goal={goalFat}
+            units="g"
+          />
+        </Else>
+      </If>
     </Flex>
   );
 };
