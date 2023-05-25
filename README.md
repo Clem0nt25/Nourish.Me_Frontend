@@ -57,8 +57,9 @@ User history tracking:
 
 ## Components
 
-- Daily Diary component
-  - Input: restaurant: any
-  - Output: favorite(restaurantId: string, on: boolean)
-- Search component
-  - Output: change(terms: string)
+- DailyDiary components
+  - DailyMacros
+  - FoodDiary
+  - FoodSearchBar
+  - FoodSearchResults
+- FoodDetails components
