@@ -8,28 +8,37 @@ import FoodImage from "../components/FoodDetails/Image";
 import GramInput from "../components/FoodDetails/GramInput";
 import AmountSlider from "../components/FoodDetails/AmountSlider";
 import MealTypeSelect from "../components/FoodDetails/MealTypeSelect";
+import NutritionInfo from "../components/FoodDetails/NutritionInfo";
 import { updateAndFetchDiary, getFood } from "../services/foodService.js";
 
 function FoodDetails() {
   const { barcode } = useParams();
   const { currUserSt } = useContext(SessionContext);
   const location = useLocation();
-  const selectedFood = location.state?.selectedFood || {}; // if no food is passed, it will be an empty
-  const [amount, setAmount] = useState(selectedFood.amount || 1);
-  const [inputAmount, setInputAmount] = useState(selectedFood.amount || 0);
+  const initialFood = {
+    foodName: "",
+    image: "",
+    barcode: "",
+    calories: 0,
+    protein: 0,
+    fiber: 0,
+    carbs: 0,
+    fat: 0,
+  };
+  const [selectedFood, setSelectedFood] = useState(
+    location.state?.selectedFood || initialFood
+  );
+  const [amount, setAmount] = useState(selectedFood.amount || 100);
+  const [inputAmount, setInputAmount] = useState(selectedFood.amount || 100);
   const [mealType, setMealType] = useState("breakfast");
+  const [adjustedFood, setAdjustedFood] = useState({});
+
+  console.log("FoodDetails: selectedFood=", selectedFood);
 
   const navigate = useNavigate();
 
   const min = 0;
   const max = 5000;
-
-  const handleUnitsBlur = () => {
-    const value = Number(inputAmount);
-    if (!isNaN(value)) {
-      setAmount(value);
-    }
-  };
 
   useEffect(() => {
     if (!selectedFood.foodName) {
@@ -37,11 +46,32 @@ function FoodDetails() {
       getFood(barcode)
         .then((foods) => {
           setAmount(foods[0].amount);
+          // Set the original nutritional values to selectedFood state
+          setSelectedFood(foods[0]);
         })
         .catch(console.error);
     }
   }, [barcode]);
 
+  useEffect(() => {
+    // Update adjustedFood whenever amount changes
+    setAdjustedFood({
+      calories: (selectedFood.calories * amount) / 100,
+      protein: (selectedFood.protein * amount) / 100,
+      fiber: (selectedFood.fiber * amount) / 100,
+      carbs: (selectedFood.carbs * amount) / 100,
+      fat: (selectedFood.fat * amount) / 100,
+    });
+  }, [amount, selectedFood]);
+
+  console.log("FoodDetails: adjustedFood=", adjustedFood);
+
+  const handleUnitsBlur = () => {
+    const value = Number(inputAmount);
+    if (!isNaN(value)) {
+      setAmount(value);
+    }
+  };
   const handleSave = async () => {
     try {
       console.log(
@@ -74,6 +104,7 @@ function FoodDetails() {
           {selectedFood.foodName}
         </Text>
         <FoodImage src={selectedFood.image} alt={selectedFood.foodName} />
+        <NutritionInfo adjustedFood={adjustedFood} />
         <GramInput
           min={min}
           max={max}

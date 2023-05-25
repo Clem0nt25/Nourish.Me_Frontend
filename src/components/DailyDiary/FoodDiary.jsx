@@ -1,20 +1,31 @@
+import { useState, useContext } from "react";
 import {
   Box,
   Flex,
   Text,
   VStack,
   Collapse,
-  useDisclosure,
   Spacer,
   IconButton,
+  Image,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { GiFruitBowl } from "react-icons/gi";
+import { ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import foodLogo from "../../assets/food-logo.png";
+import { SessionContext } from "../../contexts/SessionContext";
 
-export const FoodDiary = ({ diary }) => {
-  const { isOpen, onToggle } = useDisclosure(); // add more states for multiple meal types
+export const FoodDiary = ({ diary, onDeleteFood }) => {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState({});
+  const { currUserSt } = useContext(SessionContext);
+  const userId = currUserSt._id;
+
+  const handleToggle = (mealType) => {
+    setIsOpen((prevState) => ({
+      ...prevState,
+      [mealType]: !prevState[mealType],
+    }));
+  };
 
   return (
     <>
@@ -42,18 +53,18 @@ export const FoodDiary = ({ diary }) => {
             <Spacer />
             <IconButton
               icon={
-                isOpen ? (
+                isOpen[mealTypeObj.logicName] ? (
                   <ChevronDownIcon />
                 ) : (
                   <ChevronDownIcon transform="rotate(-180deg)" />
                 )
               }
               variant="ghost"
-              onClick={onToggle}
+              onClick={() => handleToggle(mealTypeObj.logicName)}
             />
           </Flex>
 
-          <Collapse in={isOpen}>
+          <Collapse in={isOpen[mealTypeObj.logicName]}>
             <VStack align="stretch" mt={2}>
               {diary[mealTypeObj.logicName] &&
                 diary[mealTypeObj.logicName].foods &&
@@ -73,16 +84,34 @@ export const FoodDiary = ({ diary }) => {
                       console.log("Clicked food in diary", food);
                     }}
                   >
-                    <Flex align="center">
-                      <GiFruitBowl size={24} /> {/* Placeholder icon */}
-                      <Text ml={2} fontWeight="500">
-                        {food.foodName}
-                      </Text>
-                    </Flex>
-                    <Flex mt={2}>
-                      <Text>{food.amount}g</Text>
+                    <Flex align="start">
+                      <Image src={foodLogo} alt="Food Logo" boxSize={6} />
+                      <VStack align="start" ml={2} spacing={0}>
+                        <Text fontWeight="500">{food.foodName}</Text>
+                        <Flex>
+                          <Text>{food.amount}g</Text>
+                          <Spacer />
+                          <Text>
+                            {parseFloat(food.calories).toFixed(1)} kcal
+                          </Text>
+                        </Flex>
+                      </VStack>
                       <Spacer />
-                      <Text>{parseFloat(food.calories).toFixed(1)} kcal</Text>
+                      <IconButton
+                        icon={<DeleteIcon />}
+                        variant="ghost"
+                        bg={"red.400"}
+                        _hover={{ bg: "red.500", color: "white" }}
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent navigate when the delete button is clicked
+                          onDeleteFood(
+                            userId,
+                            food.barcode,
+                            food.mealId,
+                            food.date
+                          );
+                        }}
+                      />
                     </Flex>
                   </Box>
                 ))}
