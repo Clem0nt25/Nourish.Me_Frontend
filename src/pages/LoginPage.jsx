@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import { Navigate, useNavigate } from "react-router";
 import { SessionContext } from "../contexts/SessionContext";
-import { Link } from "react-router-dom";
+import { Box, FormControl, FormLabel, Input, Button, VStack, Link, Text, Center } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
 function LoginPage() {
   const [inputSt, setInputSt] = useState({
@@ -33,10 +34,6 @@ function LoginPage() {
         const { token } = await response.json();
         setTokenSt(token);
 
-        //To Do: check if it's a new user or without any body specs set up
-        //If so, then to the step-by-step questionaire
-
-        //If not
         navigate("/daily-diary");
       } else if (
         response.status === 401 ||
@@ -50,44 +47,45 @@ function LoginPage() {
         }, 2500);
       }
     } catch (error) {
-      console.log("Error when loging in and posting to backend - ", error);
+      console.log("Error when logging in and posting to backend - ", error);
     }
   };
 
   if (isLoggedInSt) {
     return <Navigate to="/daily-diary" />;
   }
+
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Email Address:
-          <input
-            type="email"
-            required
-            name="email"
-            value={inputSt.email}
-            onChange={handleInput}
-          />
-        </label>
-        <label>
-          Password:
-          <input
-            type="password"
-            required
-            name="password"
-            value={inputSt.password}
-            onChange={handleInput}
-          />
-        </label>
-        <button type="submit">Login</button>
-      </form>
-      <Link to="/signup">
-        <button>Don't have an account yet?</button>
-      </Link>
-      {errorSt && <p>{errorSt}</p>}
-    </div>
+    <Center>
+      <VStack spacing={5} p={5} mt={10} bg="white" boxShadow="md" borderRadius="lg">
+        <Text fontSize="2xl">Login</Text>
+        <FormControl isRequired>
+            <FormLabel>Email Address:</FormLabel>
+            <Input
+                type="email"
+                name="email"
+                bg="#E8E8E8"
+                value={inputSt.email}
+                onChange={handleInput}
+            />
+        </FormControl>
+        <FormControl isRequired>
+            <FormLabel>Password:</FormLabel>
+            <Input
+                type="password"
+                name="password"
+                value={inputSt.password}
+                onChange={handleInput}
+                bg="#E8E8E8"
+            />
+        </FormControl>
+        <Button colorScheme="teal" type="submit">Login</Button>
+        <Link as={RouterLink} to="/signup">
+            <Button variant="link">Don't have an account yet?</Button>
+        </Link>
+        {errorSt && <Text color="red.500">{errorSt}</Text>}
+      </VStack>
+    </Center>
   );
 }
 

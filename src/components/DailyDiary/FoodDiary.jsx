@@ -52,6 +52,7 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
             </Text>
             <Spacer />
             <IconButton
+              bg="linear-gradient(to right, #34eb64, #98FB98)"
               icon={
                 isOpen[mealTypeObj.logicName] ? (
                   <ChevronDownIcon />
