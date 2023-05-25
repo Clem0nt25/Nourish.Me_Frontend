@@ -1,9 +1,10 @@
 import { Link, Navigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../contexts/SessionContext";
-import { Box, Button, Flex, chakra } from "@chakra-ui/react";
+import { VStack, Button, Flex, chakra, useMediaQuery } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
 import indexImage from "../assets/index.jpg";
+import indexImageLarge from "../assets/large-bg.jpg";
 
 const MotionBox = motion(chakra.div);
 
@@ -12,6 +13,10 @@ function Homepage() {
   const controls = useAnimation();
   const [colorIndex, setColorIndex] = useState(0);
   const [isIncrementing, setIsIncrementing] = useState(true);
+
+  const [isLargerThan1024] = useMediaQuery("(min-width: 1024px)");
+
+  const bgImageUrl = isLargerThan1024 ? indexImageLarge : indexImage;
 
   const colors = [
     "#98fb98",
@@ -66,11 +71,17 @@ function Homepage() {
       align="center"
       justify="center"
       minHeight="95vh"
-      backgroundImage={`url(${indexImage})`}
+      backgroundImage={`url(${bgImageUrl})`}
       backgroundSize="cover"
       backgroundPosition="center"
     >
-      <Box p={6} borderRadius="md" textAlign="center">
+      <VStack
+        spacing={4}
+        p={[2, 4, 6]}
+        minHeight="160px"
+        borderRadius="md"
+        textAlign="center"
+      >
         <MotionBox
           as="h1"
           fontSize="5xl"
@@ -111,7 +122,7 @@ function Homepage() {
             Join Today
           </Button>
         </Link>
-      </Box>
+      </VStack>
     </Flex>
   );
 }
