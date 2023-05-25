@@ -45,7 +45,7 @@ function DailyDiary() {
 
   useEffect(() => {
     const fetchInitialDiary = async () => {
-      if (currUserSt) {
+      if (currUserSt && currUserSt._id) {
         const diary =
           location.state?.newDiary || (await fetchDiary(currUserSt._id));
         console.log("Diary data fetched in DailyDiary:", diary);
