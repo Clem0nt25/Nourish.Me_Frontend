@@ -20,6 +20,7 @@ import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
 import { getFood, fetchDiary } from "../services/foodService.js";
 import { delay } from "../utils/delay";
+import { fetchUserSpecs } from "../services/foodService.js";
 
 function DailyDiary() {
   const { currUserSt } = useContext(SessionContext);
@@ -49,11 +50,25 @@ function DailyDiary() {
     fetchInitialDiary();
   }, []);
 
+  useEffect(() => {
+    const fetchCurrentUserSpec = async () => {
+      try {
+        const userSpecs = await fetchUserSpecs(currUserSt._id);
+        console.log("User specs fetched in DailyDiary:", userSpecs);
+        setUserSpecsSt(userSpecs);
+      } catch (error) {
+        console.error("Error fetching user specs:", error);
+      }
+    };
+
+    fetchCurrentUserSpec();
+  }, []);
+
   const findUserSpecs = async () => {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_API_URL}/api/checkUserSpecs/${
         currUserSt._id
-      }`
+      }`, {headers: {"content-type": "application/json"}}
     );
     if (response.status === 200) {
       const { data: userSpecs } = await response.json();
