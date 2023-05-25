@@ -9,12 +9,13 @@ import GramInput from "../components/FoodDetails/GramInput";
 import AmountSlider from "../components/FoodDetails/AmountSlider";
 import MealTypeSelect from "../components/FoodDetails/MealTypeSelect";
 import NutritionInfo from "../components/FoodDetails/NutritionInfo";
-import { updateAndFetchDiary, getFood } from "../services/foodService.js";
+import { updateAndFetchDiary, useGetFood } from "../services/foodService.js";
 
 function FoodDetails() {
   const { barcode } = useParams();
   const { currUserSt } = useContext(SessionContext);
   const location = useLocation();
+  const getFood = useGetFood();
   const initialFood = {
     foodName: "",
     image: "",

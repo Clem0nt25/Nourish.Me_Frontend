@@ -1,33 +1,45 @@
 import axios from "axios";
+import { SessionContext } from "../contexts/SessionContext";
+import { useContext } from "react";
 
 // Get food from API for search results
-export const getFood = async (foodName, cancelToken) => {
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_API_URL}/api/getFood`,
-      { foodName: `${foodName} ` },
-      { cancelToken }
-    );
+export const useGetFood = () => {
+  const { tokenSt } = useContext(SessionContext);
 
-    const foods = response.data.data.map((food) => ({
-      foodName: food.foodName,
-      image: food.image,
-      barcode: food.barcode,
-      calories: food.calories,
-      protein: food.protein,
-      fiber: food.fiber,
-      carbs: food.carbs,
-      fat: food.fat,
-    }));
+  const getFood = async (foodName) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_API_URL}/api/getFood`,
+        { foodName: `${foodName} ` },
+        {
+          headers: {
+            Authorization: `Bearer ${tokenSt}`,
+          },
+        }
+      );
 
-    return foods;
-  } catch (error) {
-    if (axios.isCancel(error)) {
-      console.log("Request cancelled");
-    } else {
-      throw error;
+      const foods = response.data.data.map((food) => ({
+        foodName: food.foodName,
+        image: food.image,
+        barcode: food.barcode,
+        calories: food.calories,
+        protein: food.protein,
+        fiber: food.fiber,
+        carbs: food.carbs,
+        fat: food.fat,
+      }));
+
+      return foods;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("Request cancelled");
+      } else {
+        throw error;
+      }
     }
-  }
+  };
+
+  return getFood;
 };
 
 // Update food details in server

@@ -2,24 +2,17 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import { useLocation } from "react-router-dom";
 
-import {
-  VStack,
-  Box,
-  IconButton,
-  Center,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
+import { VStack, Box, Center, Heading, Text } from "@chakra-ui/react";
 import MainContainer from "../components/MainContainer";
 import { FoodSearchBar } from "../components/DailyDiary/FoodSearchBar";
 import { FoodSearchResults } from "../components/DailyDiary/FoodSearchResults";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { FoodDiary } from "../components/DailyDiary/FoodDiary";
 import { DailyMacros } from "../components/DailyDiary/DailyMacros";
-import barcodeIcon from "../assets/barcode.png";
+// import barcodeIcon from "../assets/barcode.png";
 import { useNavigate } from "react-router-dom";
 import {
-  getFood,
+  useGetFood,
   fetchDiary,
   fetchUserSpecs,
   deleteFood,
@@ -43,6 +36,7 @@ function DailyDiary() {
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const getFood = useGetFood();
 
   useEffect(() => {
     const fetchInitialDiary = async () => {
@@ -165,7 +159,7 @@ function DailyDiary() {
         {/* Display diary entries */}
         <FoodDiary diary={diary} onDeleteFood={handleDeleteFood} />
 
-        <Center>
+        {/* <Center>
           <IconButton
             variant="button-primary"
             aria-label="Scan a barcode"
@@ -176,7 +170,7 @@ function DailyDiary() {
             boxShadow="lg"
             _hover={{ boxShadow: "xl" }}
           />
-        </Center>
+        </Center> */}
       </VStack>
     </MainContainer>
   );
