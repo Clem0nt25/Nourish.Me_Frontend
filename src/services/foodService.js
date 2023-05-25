@@ -42,6 +42,22 @@ export const useGetFood = () => {
   return getFood;
 };
 
+// Get food info from Barcode
+export async function useGetFoodInfoByBarcode(barcode) {
+  const response = await fetch("/api/getFoodInfoByBarcode", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ barcode }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Could not fetch food.");
+  }
+
+  return data;
+}
 // Update food details in server
 export const useUpdateFoodDetails = () => {
   const { tokenSt } = useContext(SessionContext);

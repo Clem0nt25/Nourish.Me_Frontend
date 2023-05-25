@@ -47,16 +47,17 @@ function FoodDetails() {
       // if no food is passed, fetch it from the server
       getFood(barcode)
         .then((foods) => {
-          setAmount(foods[0].amount);
           // Set the original nutritional values to selectedFood state
           setSelectedFood(foods[0]);
+          // Initialize the adjusted food to match the original values
+          setAdjustedFood(foods[0]);
         })
         .catch(console.error);
     }
   }, [barcode]);
 
   useEffect(() => {
-    // Update adjustedFood whenever amount changes
+    // Adjust the nutritional values whenever amount changes
     setAdjustedFood({
       calories: (selectedFood.calories * amount) / 100,
       protein: (selectedFood.protein * amount) / 100,
@@ -65,8 +66,6 @@ function FoodDetails() {
       fat: (selectedFood.fat * amount) / 100,
     });
   }, [amount, selectedFood]);
-
-  console.log("FoodDetails: adjustedFood=", adjustedFood);
 
   const handleUnitsBlur = () => {
     const value = Number(inputAmount);
