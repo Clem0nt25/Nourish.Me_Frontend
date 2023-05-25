@@ -110,7 +110,7 @@ export default function WeightForm({
 							{inputSt.mainGoal === "get-lean" ? " lose" : "gain"} each week.
 						</p>
 					)}
-					<div className="progress-form-radio-div short-btn-div">
+					<div className="progress-form-radio-div long-btn-div">
 						<div>
 							<input
 								type="radio"

@@ -178,3 +178,9 @@
 .short-num-input {
 	margin: 10px;
 }
+.long-btn-div button {
+	text-align: center;
+}
+.long-btn-div button label {
+	display: block;
+}
