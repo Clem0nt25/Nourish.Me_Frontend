@@ -45,34 +45,38 @@ function DailyDiary() {
 
   useEffect(() => {
     const fetchInitialDiary = async () => {
-      const diary =
-        location.state?.newDiary || (await fetchDiary(currUserSt._id));
-      console.log("Diary data fetched in DailyDiary:", diary);
-      setDiary(diary);
+      if (currUserSt) {
+        const diary =
+          location.state?.newDiary || (await fetchDiary(currUserSt._id));
+        console.log("Diary data fetched in DailyDiary:", diary);
+        setDiary(diary);
+      }
     };
 
     fetchInitialDiary();
-  }, [currUserSt._id]);
+  }, [currUserSt]);
 
   useEffect(() => {
     const fetchCurrentUserSpec = async () => {
-      try {
-        console.log("currUserSt._id:", currUserSt._id);
-        await fetchUserSpecsCurr(currUserSt._id);
-        const userSpecs = await fetchUserSpecs(currUserSt._id);
-        console.log("User specs fetched in DailyDiary:", userSpecs);
-        setUserSpecsSt(userSpecs);
-      } catch (error) {
-        if (error.response.status === 404) {
-          navigate("/progress-questionnaire");
-        } else {
-          console.error("Error fetching user specs:", error);
+      if (currUserSt) {
+        try {
+          console.log("currUserSt._id:", currUserSt._id);
+          await fetchUserSpecsCurr(currUserSt._id);
+          const userSpecs = await fetchUserSpecs(currUserSt._id);
+          console.log("User specs fetched in DailyDiary:", userSpecs);
+          setUserSpecsSt(userSpecs);
+        } catch (error) {
+          if (error.response.status === 404) {
+            navigate("/progress-questionnaire");
+          } else {
+            console.error("Error fetching user specs:", error);
+          }
         }
       }
     };
 
     fetchCurrentUserSpec();
-  }, [currUserSt._id]);
+  }, [currUserSt]);
 
   const searchFoods = async (isRetry = false) => {
     setIsLoading(true);
