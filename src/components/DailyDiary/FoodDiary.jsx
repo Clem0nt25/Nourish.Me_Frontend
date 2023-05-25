@@ -52,7 +52,6 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
             </Text>
             <Spacer />
             <IconButton
-              bg="linear-gradient(to right, #34eb64, #98FB98)"
               icon={
                 isOpen[mealTypeObj.logicName] ? (
                   <ChevronDownIcon />
@@ -89,11 +88,10 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
                       <Image src={foodLogo} alt="Food Logo" boxSize={6} />
                       <VStack align="start" ml={2} spacing={0}>
                         <Text fontWeight="500">{food.foodName}</Text>
-                        <Flex>
-                          <Text>{food.amount}g</Text>
-                          <Spacer />
+                        <Flex width="full" justifyContent="space-between">
+                          <Text>{food.amount}g </Text>
                           <Text>
-                            {parseFloat(food.calories).toFixed(1)} kcal
+                            {parseFloat(food.calories).toFixed(1)}kcal
                           </Text>
                         </Flex>
                       </VStack>

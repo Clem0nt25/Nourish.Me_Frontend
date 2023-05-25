@@ -14,9 +14,6 @@ function Homepage() {
   const [isIncrementing, setIsIncrementing] = useState(true);
 
   const colors = [
-    "#6ab06a",
-    "#7ac97a",
-    "#89e289",
     "#98fb98",
     "#a2fba2",
     "#adfcad",
