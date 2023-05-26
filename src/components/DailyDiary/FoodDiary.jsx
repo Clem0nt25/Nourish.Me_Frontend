@@ -88,12 +88,12 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
                       <Flex>
                         <Image src={foodLogo} alt="Food Logo" boxSize={6} />
                         <VStack align="start" ml={2} spacing={0}>
-                          <Text fontWeight="500">
-                            {food.foodName && typeof food.foodName === "string"
-                              ? food.foodName.replace(/\b\w/g, (char) =>
-                                  char.toUpperCase()
-                                )
-                              : ""}
+                          <Text
+                            fontWeight="500"
+                            isTruncated
+                            maxW={["100px", "240px", "280px", "320px"]}
+                          >
+                            {food.foodName}
                           </Text>
                         </VStack>
                       </Flex>

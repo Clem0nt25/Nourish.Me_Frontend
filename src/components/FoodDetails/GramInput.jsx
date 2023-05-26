@@ -6,7 +6,17 @@ import {
   NumberDecrementStepper,
 } from "@chakra-ui/react";
 
+import { useRef, useEffect } from "react";
+
 function GramInput({ min, max, value, onChange, onBlur }) {
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [value]);
+
   return (
     <ChakraNumberInput
       min={min}
@@ -15,7 +25,7 @@ function GramInput({ min, max, value, onChange, onBlur }) {
       onChange={onChange}
       onBlur={onBlur}
     >
-      <NumberInputField bg="#fff" />
+      <NumberInputField bg="#fff" ref={inputRef} />
       <NumberInputStepper>
         <NumberIncrementStepper />
         <NumberDecrementStepper />
