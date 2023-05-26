@@ -18,7 +18,7 @@ export const FoodDiary = ({ diary, onDeleteFood }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState({});
   const { currUserSt } = useContext(SessionContext);
-  const userId = currUserSt._id;
+  const userId = currUserSt ? currUserSt._id : null;
 
   const handleToggle = (mealType) => {
     setIsOpen((prevState) => ({
