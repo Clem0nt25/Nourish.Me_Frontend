@@ -124,6 +124,7 @@ function Navbar() {
                 icon={<HamburgerIcon />}
                 onClick={onOpen}
                 bg={"#FF9400"}
+                boxShadow={"md"}
               />
 
               <Drawer

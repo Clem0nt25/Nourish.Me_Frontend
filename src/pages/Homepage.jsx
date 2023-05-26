@@ -82,7 +82,7 @@ function Homepage() {
       >
         <MotionBox
           as="h1"
-          fontSize="5xl"
+          fontSize={["3xl", "4xl", "5xl"]}
           mb={2}
           mt={-4}
           fontWeight="extrabold"
