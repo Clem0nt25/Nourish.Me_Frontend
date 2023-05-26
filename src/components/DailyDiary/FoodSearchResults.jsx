@@ -2,6 +2,10 @@ import { VStack, Box, Text } from "@chakra-ui/react";
 
 export const FoodSearchResults = ({ results, handleFoodSelect }) => {
   const capitalizeWords = (str) => {
+    if (!str) {
+      return "";
+    }
+
     return str
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -27,7 +31,11 @@ export const FoodSearchResults = ({ results, handleFoodSelect }) => {
             bg={index % 2 === 0 ? "#f8f8f8" : "white"}
             _hover={{ bg: "lightgray" }}
           >
-            <Text fontWeight="bold">{capitalizeWords(food.foodName)}</Text>
+            <Text fontWeight="bold">
+              {food.foodName && typeof food.foodName === "string" && (
+                <Text fontWeight="bold">{capitalizeWords(food.foodName)}</Text>
+              )}
+            </Text>
           </Box>
         ))}
       </VStack>

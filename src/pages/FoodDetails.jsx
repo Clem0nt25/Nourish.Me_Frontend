@@ -77,7 +77,12 @@ function FoodDetails() {
     <MainContainer>
       <VStack>
         <Text fontSize="xl" fontWeight="bold">
-          {foodData.original.foodName}
+          {foodData.original.foodName &&
+          typeof foodData.original.foodName === "string"
+            ? foodData.original.foodName.replace(/\b\w/g, (char) =>
+                char.toUpperCase()
+              )
+            : ""}
         </Text>
         <FoodImage
           src={foodData.original.image}
