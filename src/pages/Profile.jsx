@@ -17,6 +17,7 @@ import GoalForm from "../components/forms/GoalForm";
 import WeightForm from "../components/forms/WeightForm";
 import ActivityLevelForm from "../components/forms/ActivityLevelForm";
 import caculateUserSpecs from "../components/forms/caculateUserSpecs";
+import MainContainer from "../components/MainContainer";
 
 function Profile() {
   const { logout, currUserSt, tokenSt } = useContext(SessionContext);
@@ -156,281 +157,296 @@ function Profile() {
 
   return (
     userSpecsSt && (
-      <div className="profile-page">
-        <h3>{userSpecsSt.username} :)</h3>
-        <div className="profile-specs-contatiner">
-          <div>
-            <div className="spec-titles">
-              <h6>-Basic informaton-</h6>
+      <MainContainer>
+        <div className="profile-page">
+          <h3>
+            <b>Hello {userSpecsSt.username}✨</b>
+          </h3>
+          <div className="profile-specs-contatiner">
+            <div>
+              <div className="spec-titles">
+                <h6>-Basic informaton-</h6>
+              </div>
+              <div className="specs-content">
+                <p>Gender</p>
+                <h4>
+                  {userSpecsSt.gender[0].toUpperCase() +
+                    userSpecsSt.gender.slice(1)}
+                </h4>
+                <div className="specs-content-gap"></div>
+                <p>Year of birth</p>
+                <h4>{userSpecsSt.yearOfBirth}</h4>
+                <div className="specs-content-gap"></div>
+                <p>Height</p>
+                <h4>{userSpecsSt.height}cm</h4>
+              </div>
             </div>
-            <div className="specs-content">
-              <p>Gender</p>
-              <h4>
-                {userSpecsSt.gender[0].toUpperCase() +
-                  userSpecsSt.gender.slice(1)}
-              </h4>
-              <div className="specs-content-gap"></div>
-              <p>Year of birth</p>
-              <h4>{userSpecsSt.yearOfBirth}</h4>
-              <div className="specs-content-gap"></div>
-              <p>Height</p>
-              <h4>{userSpecsSt.height}cm</h4>
-            </div>
+            <button
+              onClick={() => {
+                setIsOpenModalSt({ ...isOpenModalSt, baseInfoModal: true });
+              }}
+            >
+              <img src={editLogo} alt="edit" width={20} />
+            </button>
           </div>
-          <button
-            onClick={() => {
-              setIsOpenModalSt({ ...isOpenModalSt, baseInfoModal: true });
-            }}
-          >
-            <img src={editLogo} alt="edit" width={20} />
-          </button>
-        </div>
-        <div className="profile-specs-contatiner">
-          <div>
-            <div className="spec-titles">
-              <h6>-Your diet goal-</h6>
+          <div className="profile-specs-contatiner">
+            <div>
+              <div className="spec-titles">
+                <h6>-Your diet goal-</h6>
+              </div>
+              <div className="specs-content">
+                <p>You now aim to</p>
+                <h4>
+                  {userSpecsSt.mainGoal
+                    .split("-")
+                    .map((word) => {
+                      return word[0].toUpperCase() + word.slice(1);
+                    })
+                    .join(" ")}
+                </h4>
+              </div>
             </div>
-            <div className="specs-content">
-              <p>You now aim to</p>
-              <h4>
-                {userSpecsSt.mainGoal
-                  .split("-")
-                  .map((word) => {
-                    return word[0].toUpperCase() + word.slice(1);
-                  })
-                  .join(" ")}
-              </h4>
-            </div>
+            <button
+              onClick={() => {
+                setIsOpenModalSt({ ...isOpenModalSt, goalModal: true });
+              }}
+            >
+              <img src={editLogo} alt="edit" width={20} />
+            </button>
           </div>
-          <button
-            onClick={() => {
-              setIsOpenModalSt({ ...isOpenModalSt, goalModal: true });
-            }}
-          >
-            <img src={editLogo} alt="edit" width={20} />
-          </button>
-        </div>
-        <div className="profile-specs-contatiner">
-          <div>
-            <div className="spec-titles">
-              <h6>-Your weight information-</h6>
+          <div className="profile-specs-contatiner">
+            <div>
+              <div className="spec-titles">
+                <h6>-Your weight information-</h6>
+              </div>
+              <div className="specs-content">
+                <p>Current weight</p>
+                <h4>{userSpecsSt.currentWeight}kg</h4>
+                {!(
+                  userSpecsSt.mainGoal === "recompose" ||
+                  userSpecsSt.mainGoal === "keep-shape"
+                ) && (
+                  <>
+                    <div className="specs-content-gap"></div>
+                    <p>Goal weight</p>
+                    <h4>
+                      {userSpecsSt.currentWeight +
+                        (userSpecsSt.mainGoal === "get-lean"
+                          ? -inputSt.goalWeightChange
+                          : inputSt.goalWeightChange)}
+                      kg
+                    </h4>
+                    <div className="specs-content-gap"></div>
+                    <p>Aimed weight change</p>
+                    <h4>{userSpecsSt.weightChangePerWeek} per week</h4>
+                  </>
+                )}
+              </div>
             </div>
-            <div className="specs-content">
-              <p>Current weight</p>
-              <h4>{userSpecsSt.currentWeight}kg</h4>
-              {!(
-                userSpecsSt.mainGoal === "recompose" ||
-                userSpecsSt.mainGoal === "keep-shape"
-              ) && (
-                <>
-                  <div className="specs-content-gap"></div>
-                  <p>Goal weight</p>
-                  <h4>
-                    {userSpecsSt.currentWeight +
-                      (userSpecsSt.mainGoal === "get-lean"
-                        ? -inputSt.goalWeightChange
-                        : inputSt.goalWeightChange)}
-                    kg
-                  </h4>
-                  <div className="specs-content-gap"></div>
-                  <p>Aimed weight change</p>
-                  <h4>{userSpecsSt.weightChangePerWeek} per week</h4>
-                </>
-              )}
-            </div>
+            <button
+              onClick={() => {
+                setIsOpenModalSt({ ...isOpenModalSt, weightModal: true });
+              }}
+            >
+              <img src={editLogo} alt="edit" width={20} />
+            </button>
           </div>
-          <button
-            onClick={() => {
-              setIsOpenModalSt({ ...isOpenModalSt, weightModal: true });
-            }}
-          >
-            <img src={editLogo} alt="edit" width={20} />
-          </button>
-        </div>
-        <div className="profile-specs-contatiner">
-          <div>
-            <div className="spec-titles">
-              <h6>-Your activity level-</h6>
+          <div className="profile-specs-contatiner">
+            <div>
+              <div className="spec-titles">
+                <h6>-Your activity level-</h6>
+              </div>
+              <div className="specs-content">
+                <p>Daily life and work-out intensity</p>
+                <h4>
+                  {userSpecsSt.activityLevel[0].toUpperCase() +
+                    userSpecsSt.activityLevel.slice(1)}
+                </h4>
+              </div>
             </div>
-            <div className="specs-content">
-              <p>Daily life and work-out intensity</p>
-              <h4>
-                {userSpecsSt.activityLevel[0].toUpperCase() +
-                  userSpecsSt.activityLevel.slice(1)}
-              </h4>
-            </div>
+            <button
+              onClick={() => {
+                setIsOpenModalSt({
+                  ...isOpenModalSt,
+                  activityLevelModal: true,
+                });
+              }}
+            >
+              <img src={editLogo} alt="edit" width={20} />
+            </button>
           </div>
-          <button
-            onClick={() => {
-              setIsOpenModalSt({ ...isOpenModalSt, activityLevelModal: true });
-            }}
+          <div className="profile-btn-contatiner">
+            <button className="profile-logout-btn" onClick={logout}>
+              Log out
+            </button>
+          </div>
+          {/* 4 Modals --------------------------------------------------- */}
+          {/* Base Info Modal --------------------------------------------------- */}
+          <Modal
+            closeOnOverlayClick={false}
+            isOpen={isOpenModalSt.baseInfoModal}
+            onClose={isOpenModalSt.baseInfoModal}
+            isCentered
+            size="sm"
           >
-            <img src={editLogo} alt="edit" width={20} />
-          </button>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Edit your base info</ModalHeader>
+              <ModalBody pb={6}>
+                <NameForm inputSt={inputSt} handleInput={handleInput} inEdit />
+                <BaseInfoForm inputSt={inputSt} handleInput={handleInput} />
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  onClick={(e) => {
+                    handleSubmit(e);
+                  }}
+                >
+                  Save Change
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsOpenModalSt({
+                      ...isOpenModalSt,
+                      baseInfoModal: false,
+                    });
+                    setInputSt(userSpecsSt);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+          {/* Main Goal Modal --------------------------------------------------- */}
+          <Modal
+            closeOnOverlayClick={false}
+            isOpen={isOpenModalSt.goalModal}
+            onClose={isOpenModalSt.goalModal}
+            isCentered
+            size="sm"
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Edit your diet goal</ModalHeader>
+              <ModalBody pb={6}>
+                <GoalForm inputSt={inputSt} handleInput={handleInput} inEdit />
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  onClick={(e) => {
+                    handleSubmit(e);
+                  }}
+                >
+                  Save Change
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsOpenModalSt({ ...isOpenModalSt, goalModal: false });
+                    setInputSt(userSpecsSt);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+          {/* Weight Modal --------------------------------------------------- */}
+          <Modal
+            closeOnOverlayClick={false}
+            isOpen={isOpenModalSt.weightModal}
+            onClose={isOpenModalSt.weightModal}
+            isCentered
+            size="sm"
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                Edit your current weight and goal weight
+              </ModalHeader>
+              <ModalBody pb={6}>
+                <WeightForm
+                  inputSt={inputSt}
+                  handleInput={handleInput}
+                  inEdit
+                />
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  onClick={(e) => {
+                    handleSubmit(e);
+                  }}
+                >
+                  Save Change
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsOpenModalSt({ ...isOpenModalSt, weightModal: false });
+                    setInputSt(userSpecsSt);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+          {/* Activity LevelModal Modal --------------------------------------------------- */}
+          <Modal
+            closeOnOverlayClick={false}
+            isOpen={isOpenModalSt.activityLevelModal}
+            onClose={isOpenModalSt.activityLevelModal}
+            isCentered
+            size="sm"
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                Edit your current weight and goal weight
+              </ModalHeader>
+              <ModalBody pb={6}>
+                <ActivityLevelForm
+                  inputSt={inputSt}
+                  handleInput={handleInput}
+                  inEdit
+                />
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  colorScheme="green"
+                  mr={3}
+                  onClick={(e) => {
+                    handleSubmit(e);
+                  }}
+                >
+                  Save Change
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsOpenModalSt({
+                      ...isOpenModalSt,
+                      activityLevelModal: false,
+                    });
+                    setInputSt(userSpecsSt);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+          {/* --------------------------------------------------- */}
         </div>
-        <div className="profile-btn-contatiner">
-          <button className="profile-logout-btn" onClick={logout}>
-            Log out
-          </button>
-        </div>
-        {/* 4 Modals --------------------------------------------------- */}
-        {/* Base Info Modal --------------------------------------------------- */}
-        <Modal
-          closeOnOverlayClick={false}
-          isOpen={isOpenModalSt.baseInfoModal}
-          onClose={isOpenModalSt.baseInfoModal}
-          isCentered
-          size="sm"
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Edit your base info</ModalHeader>
-            <ModalBody pb={6}>
-              <NameForm inputSt={inputSt} handleInput={handleInput} inEdit />
-              <BaseInfoForm inputSt={inputSt} handleInput={handleInput} />
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                colorScheme="green"
-                mr={3}
-                onClick={(e) => {
-                  handleSubmit(e);
-                }}
-              >
-                Save Change
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsOpenModalSt({
-                    ...isOpenModalSt,
-                    baseInfoModal: false,
-                  });
-                  setInputSt(userSpecsSt);
-                }}
-              >
-                Cancel
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        {/* Main Goal Modal --------------------------------------------------- */}
-        <Modal
-          closeOnOverlayClick={false}
-          isOpen={isOpenModalSt.goalModal}
-          onClose={isOpenModalSt.goalModal}
-          isCentered
-          size="sm"
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Edit your diet goal</ModalHeader>
-            <ModalBody pb={6}>
-              <GoalForm inputSt={inputSt} handleInput={handleInput} inEdit />
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                colorScheme="green"
-                mr={3}
-                onClick={(e) => {
-                  handleSubmit(e);
-                }}
-              >
-                Save Change
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsOpenModalSt({ ...isOpenModalSt, goalModal: false });
-                  setInputSt(userSpecsSt);
-                }}
-              >
-                Cancel
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        {/* Weight Modal --------------------------------------------------- */}
-        <Modal
-          closeOnOverlayClick={false}
-          isOpen={isOpenModalSt.weightModal}
-          onClose={isOpenModalSt.weightModal}
-          isCentered
-          size="sm"
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Edit your current weight and goal weight</ModalHeader>
-            <ModalBody pb={6}>
-              <WeightForm inputSt={inputSt} handleInput={handleInput} inEdit />
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                colorScheme="green"
-                mr={3}
-                onClick={(e) => {
-                  handleSubmit(e);
-                }}
-              >
-                Save Change
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsOpenModalSt({ ...isOpenModalSt, weightModal: false });
-                  setInputSt(userSpecsSt);
-                }}
-              >
-                Cancel
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        {/* Activity LevelModal Modal --------------------------------------------------- */}
-        <Modal
-          closeOnOverlayClick={false}
-          isOpen={isOpenModalSt.activityLevelModal}
-          onClose={isOpenModalSt.activityLevelModal}
-          isCentered
-          size="sm"
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Edit your current weight and goal weight</ModalHeader>
-            <ModalBody pb={6}>
-              <ActivityLevelForm
-                inputSt={inputSt}
-                handleInput={handleInput}
-                inEdit
-              />
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                colorScheme="green"
-                mr={3}
-                onClick={(e) => {
-                  handleSubmit(e);
-                }}
-              >
-                Save Change
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsOpenModalSt({
-                    ...isOpenModalSt,
-                    activityLevelModal: false,
-                  });
-                  setInputSt(userSpecsSt);
-                }}
-              >
-                Cancel
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        {/* --------------------------------------------------- */}
-      </div>
+      </MainContainer>
     )
   );
 }

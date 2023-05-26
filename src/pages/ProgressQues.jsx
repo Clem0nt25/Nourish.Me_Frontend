@@ -9,6 +9,7 @@ import FinalText from "../components/forms/FinalText";
 import { useNavigate } from "react-router";
 import caculateUserSpecs from "../components/forms/caculateUserSpecs";
 import { Button } from "@chakra-ui/react";
+import MainContainer from "../components/MainContainer";
 
 function ProgressQues() {
   const [stepSt, setStepSt] = useState(0);
@@ -154,53 +155,55 @@ function ProgressQues() {
     Math.round((1 / 6) * (stepSt + 1) * 100).toString() + "%";
 
   return (
-    <div className="progress-ques-page">
-      <div className="progressbar">
-        <div style={{ width: barLengthCss }}></div>
-      </div>
-      <form onSubmit={handleSubmit}>
-        <div className="progress-input-div">{displayByStep()}</div>
-        <div className="progress-ques-btn-div">
-          <Button
-            className="progress-btn"
-            type="button"
-            hidden={stepSt === 0 ? true : false}
-            colorScheme="green"
-            variant="outline"
-            onClick={() => {
-              if (stepSt > 0) {
-                setStepSt((preStep) => preStep - 1);
-              }
-            }}
-          >
-            Back
-          </Button>
-          <Button
-            className="progress-btn"
-            type="button"
-            isDisabled={!ifFilledSt[stepSt]}
-            hidden={stepSt < 5 ? false : true}
-            colorScheme="green"
-            variant="solid"
-            onClick={() => {
-              if (stepSt < 5) {
-                setStepSt((preStep) => preStep + 1);
-              }
-            }}
-          >
-            Next
-          </Button>
-          <Button
-            type="submit"
-            hidden={stepSt === 5 ? false : true}
-            colorScheme="green"
-            variant="solid"
-          >
-            Complete
-          </Button>
+    <MainContainer>
+      <div className="progress-ques-page">
+        <div className="progressbar">
+          <div style={{ width: barLengthCss }}></div>
         </div>
-      </form>
-    </div>
+        <form onSubmit={handleSubmit}>
+          <div className="progress-input-div">{displayByStep()}</div>
+          <div className="progress-ques-btn-div">
+            <Button
+              className="progress-btn"
+              type="button"
+              hidden={stepSt === 0 ? true : false}
+              colorScheme="green"
+              variant="outline"
+              onClick={() => {
+                if (stepSt > 0) {
+                  setStepSt((preStep) => preStep - 1);
+                }
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              className="progress-btn"
+              type="button"
+              isDisabled={!ifFilledSt[stepSt]}
+              hidden={stepSt < 5 ? false : true}
+              colorScheme="green"
+              variant="solid"
+              onClick={() => {
+                if (stepSt < 5) {
+                  setStepSt((preStep) => preStep + 1);
+                }
+              }}
+            >
+              Next
+            </Button>
+            <Button
+              type="submit"
+              hidden={stepSt === 5 ? false : true}
+              colorScheme="green"
+              variant="solid"
+            >
+              Complete
+            </Button>
+          </div>
+        </form>
+      </div>
+    </MainContainer>
   );
 }
 
